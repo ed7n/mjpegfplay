@@ -1,0 +1,76 @@
+TEST_CFG:
+
+# basic entry
+
+    key:
+value
+    :key
+
+
+# test values
+
+    number:
+08192017
+    :number
+
+    word:
+ConfigFileReader
+    :word
+
+    phrase:
+was conceived
+    :phrase
+
+    bell:
+
+    :bell
+
+
+# test keys
+
+    TEST_KEY:
+OKC
+    :TEST_KEY
+
+    _TESTKEY:
+OKL
+    :_TESTKEY
+
+    TESTKEY_:
+OKR
+    :TESTKEY_
+
+    TEST+KEY:
+Don't touch me!
+    :TEST+KEY
+
+    :
+Don't touch me either!
+    :
+
+
+# test entries
+
+    ENTRY:  # data == "ENTRY:"
+ENTRY:
+    :ENTRY
+
+    DUPLICATE:  # data == ""
+:DUPLICATE
+    :DUPLICATE
+
+    DUPLICATE:
+Touch me by index only.
+    :DUPLICATE
+
+
+# long data
+
+    LECTURE:
+A configuration entry data may span multiple lines.
+ Two lines are concatenated as is; no whitespace between them.
+ This line should not :LECTURE close this entry.
+ :LECTURE This line should, so don't parse me.
+    :LECTURE
+
+:TEST_CFG
