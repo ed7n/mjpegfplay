@@ -1,0 +1,21 @@
+mJPEGfPlay: Changes
+
+—Update 0
+
+——Revision 4, 11/06/2021.
+- Both front panel text rows lean left.
+- Fixed audio engine memory leak.
+- Fixed negative A/V offset.
+- Prepended "--" to command-line options.
+- Print usage.
+- Render lens buffer usage.
+- Tweaked New Sequence dialog.
+
+——Revision 3, 11/28/2018.
+
+——Revision 2, 11/27/2018.
+
+——Revision 1, 11/26/2018.
+
+——Revision 0, 11/25/2018.
+- Initial release.

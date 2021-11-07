@@ -1,7 +1,6 @@
 // TODO: JUnit conversion to standard assert statements
 
-//// @formatter:off
-//package eden.common.audio;
+////package eden.common.audio;
 //
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
