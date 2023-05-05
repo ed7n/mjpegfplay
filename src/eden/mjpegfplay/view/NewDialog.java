@@ -1,5 +1,7 @@
 package eden.mjpegfplay.view;
 
+import static eden.mjpegfplay.view.UIConstants.*;
+
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,8 +16,6 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
-import static eden.mjpegfplay.view.UIConstants.*;
-
 /**
  * A NewDialog presents a form to make new sequence metadata files.
  *
@@ -26,32 +26,23 @@ class NewDialog implements ActionListener {
 
   /** Parent application UI */
   private final ApplicationUI ui;
-
   /** Dialog itself */
   private final JDialog dialog;
-
   /** Application file chooser */
   private final JFileChooser fileChooser;
-
   /** Application UI LayoutManager */
   private final SpringLayout layout;
-
   /** Dialog labels */
   private final List<JLabel> labels = makeLabels();
-
   /** Dialog TextFields */
   private final List<JTextField> textFields = makeTextFields();
-
   /** Dialog Buttons */
   private final List<JButton> buttons = makeButtons();
 
   /** Makes a NewDialog with the given ApplicationUI */
   NewDialog(ApplicationUI ui) {
     this.ui = ui;
-
-    this.dialog = new JDialog(
-        ui.frameMain, "New Sequence Metadata", true
-    );
+    this.dialog = new JDialog(ui.frameMain, "New Sequence Metadata", true);
     this.fileChooser = ui.chooser;
     this.layout = ui.layout;
     this.dialog.getContentPane().setBackground(COLOR_INTERFACE);
@@ -68,19 +59,23 @@ class NewDialog implements ActionListener {
   public void actionPerformed(ActionEvent event) {
     switch (event.getActionCommand()) {
       case "browse":
-        if (this.fileChooser.showDialog(this.dialog, "Select")
-            == JFileChooser.APPROVE_OPTION)
-          this.textFields.get(6).setText(
+        if (
+          this.fileChooser.showDialog(this.dialog, "Select") ==
+          JFileChooser.APPROVE_OPTION
+        ) {
+          this.textFields.get(6)
+            .setText(
               this.fileChooser.getSelectedFile().getPath() + File.separator
-          );
+            );
+        }
         break;
       case "make":
         String path;
-
-        if (!this.textFields.get(6).getText().endsWith(File.separator))
+        if (!this.textFields.get(6).getText().endsWith(File.separator)) {
           path = this.textFields.get(6).getText() + File.separator;
-        else
+        } else {
           path = this.textFields.get(6).getText();
+        }
         try {
           this.ui.instance.make(
               path,
@@ -90,21 +85,21 @@ class NewDialog implements ActionListener {
               Integer.parseInt(this.textFields.get(3).getText()),
               Short.parseShort(this.textFields.get(4).getText()),
               Short.parseShort(this.textFields.get(5).getText())
-          );
+            );
         } catch (Exception e) {
           this.ui.messenger.sayException(e);
           break;
         }
-        this.ui.messenger.sayInfo("Make Sequence",
+        this.ui.messenger.sayInfo(
+            "Make Sequence",
             "The metadata file has been written successfully."
-        );
+          );
       case "cancel":
         this.textFields.forEach(f -> {
-          f.setText(null);
-        });
+            f.setText(null);
+          });
         this.dialog.setVisible(false);
         break;
-
     }
   }
 
@@ -118,235 +113,321 @@ class NewDialog implements ActionListener {
 
   private void initializeLabels() {
     this.labels.forEach(l -> {
-      this.dialog.getContentPane().add(l);
-    });
+        this.dialog.getContentPane().add(l);
+      });
     this.layout.putConstraint(
-        SpringLayout.NORTH, this.labels.get(0),
+        SpringLayout.NORTH,
+        this.labels.get(0),
         PADDING_VERTICAL,
-        SpringLayout.NORTH, this.dialog.getContentPane()
-    );
+        SpringLayout.NORTH,
+        this.dialog.getContentPane()
+      );
     this.layout.putConstraint(
-        SpringLayout.WEST, this.labels.get(0),
+        SpringLayout.WEST,
+        this.labels.get(0),
         0,
-        SpringLayout.WEST, this.textFields.get(0)
-    );
+        SpringLayout.WEST,
+        this.textFields.get(0)
+      );
     this.layout.putConstraint(
-        SpringLayout.NORTH, this.labels.get(1),
+        SpringLayout.NORTH,
+        this.labels.get(1),
         PADDING_VERTICAL,
-        SpringLayout.SOUTH, this.textFields.get(0)
-    );
+        SpringLayout.SOUTH,
+        this.textFields.get(0)
+      );
     this.layout.putConstraint(
-        SpringLayout.WEST, this.labels.get(1),
+        SpringLayout.WEST,
+        this.labels.get(1),
         0,
-        SpringLayout.WEST, this.textFields.get(1)
-    );
+        SpringLayout.WEST,
+        this.textFields.get(1)
+      );
     this.layout.putConstraint(
-        SpringLayout.NORTH, this.labels.get(2),
+        SpringLayout.NORTH,
+        this.labels.get(2),
         PADDING_VERTICAL,
-        SpringLayout.SOUTH, this.textFields.get(0)
-    );
+        SpringLayout.SOUTH,
+        this.textFields.get(0)
+      );
     this.layout.putConstraint(
-        SpringLayout.WEST, this.labels.get(2),
+        SpringLayout.WEST,
+        this.labels.get(2),
         0,
-        SpringLayout.WEST, this.textFields.get(2)
-    );
+        SpringLayout.WEST,
+        this.textFields.get(2)
+      );
     this.layout.putConstraint(
-        SpringLayout.NORTH, this.labels.get(3),
+        SpringLayout.NORTH,
+        this.labels.get(3),
         PADDING_VERTICAL,
-        SpringLayout.SOUTH, this.textFields.get(0)
-    );
+        SpringLayout.SOUTH,
+        this.textFields.get(0)
+      );
     this.layout.putConstraint(
-        SpringLayout.WEST, this.labels.get(3),
+        SpringLayout.WEST,
+        this.labels.get(3),
         0,
-        SpringLayout.WEST, this.textFields.get(3)
-    );
+        SpringLayout.WEST,
+        this.textFields.get(3)
+      );
     this.layout.putConstraint(
-        SpringLayout.NORTH, this.labels.get(4),
+        SpringLayout.NORTH,
+        this.labels.get(4),
         PADDING_VERTICAL,
-        SpringLayout.SOUTH, this.textFields.get(1)
-    );
+        SpringLayout.SOUTH,
+        this.textFields.get(1)
+      );
     this.layout.putConstraint(
-        SpringLayout.WEST, this.labels.get(4),
+        SpringLayout.WEST,
+        this.labels.get(4),
         0,
-        SpringLayout.WEST, this.textFields.get(4)
-    );
+        SpringLayout.WEST,
+        this.textFields.get(4)
+      );
     this.layout.putConstraint(
-        SpringLayout.NORTH, this.labels.get(5),
+        SpringLayout.NORTH,
+        this.labels.get(5),
         PADDING_VERTICAL,
-        SpringLayout.SOUTH, this.textFields.get(1)
-    );
+        SpringLayout.SOUTH,
+        this.textFields.get(1)
+      );
     this.layout.putConstraint(
-        SpringLayout.WEST, this.labels.get(5),
+        SpringLayout.WEST,
+        this.labels.get(5),
         0,
-        SpringLayout.WEST, this.textFields.get(5)
-    );
+        SpringLayout.WEST,
+        this.textFields.get(5)
+      );
     this.layout.putConstraint(
-        SpringLayout.NORTH, this.labels.get(6),
+        SpringLayout.NORTH,
+        this.labels.get(6),
         PADDING_VERTICAL,
-        SpringLayout.SOUTH, this.textFields.get(4)
-    );
+        SpringLayout.SOUTH,
+        this.textFields.get(4)
+      );
     this.layout.putConstraint(
-        SpringLayout.WEST, this.labels.get(6),
+        SpringLayout.WEST,
+        this.labels.get(6),
         0,
-        SpringLayout.WEST, this.textFields.get(6)
-    );
+        SpringLayout.WEST,
+        this.textFields.get(6)
+      );
   }
 
   private void initializeTextFields() {
     this.textFields.forEach(f -> {
-      this.dialog.getContentPane().add(f);
-    });
+        this.dialog.getContentPane().add(f);
+      });
     this.layout.putConstraint(
-        SpringLayout.NORTH, this.textFields.get(0),
+        SpringLayout.NORTH,
+        this.textFields.get(0),
         0,
-        SpringLayout.SOUTH, this.labels.get(0)
-    );
+        SpringLayout.SOUTH,
+        this.labels.get(0)
+      );
     this.layout.putConstraint(
-        SpringLayout.WEST, this.textFields.get(0),
+        SpringLayout.WEST,
+        this.textFields.get(0),
         PADDING_HORIZONTAL,
-        SpringLayout.WEST, this.dialog.getContentPane()
-    );
+        SpringLayout.WEST,
+        this.dialog.getContentPane()
+      );
     this.layout.putConstraint(
-        SpringLayout.EAST, this.textFields.get(0),
+        SpringLayout.EAST,
+        this.textFields.get(0),
         -PADDING_HORIZONTAL,
-        SpringLayout.EAST, this.dialog.getContentPane()
-    );
+        SpringLayout.EAST,
+        this.dialog.getContentPane()
+      );
     this.layout.putConstraint(
-        SpringLayout.NORTH, this.textFields.get(1),
+        SpringLayout.NORTH,
+        this.textFields.get(1),
         0,
-        SpringLayout.SOUTH, this.labels.get(1)
-    );
+        SpringLayout.SOUTH,
+        this.labels.get(1)
+      );
     this.layout.putConstraint(
-        SpringLayout.WEST, this.textFields.get(1),
+        SpringLayout.WEST,
+        this.textFields.get(1),
         PADDING_HORIZONTAL,
-        SpringLayout.WEST, this.dialog.getContentPane()
-    );
+        SpringLayout.WEST,
+        this.dialog.getContentPane()
+      );
     this.layout.putConstraint(
-        SpringLayout.NORTH, this.textFields.get(2),
+        SpringLayout.NORTH,
+        this.textFields.get(2),
         0,
-        SpringLayout.SOUTH, this.labels.get(2)
-    );
+        SpringLayout.SOUTH,
+        this.labels.get(2)
+      );
     this.layout.putConstraint(
-        SpringLayout.WEST, this.textFields.get(2),
+        SpringLayout.WEST,
+        this.textFields.get(2),
         PADDING_HORIZONTAL,
-        SpringLayout.EAST, this.textFields.get(1)
-    );
+        SpringLayout.EAST,
+        this.textFields.get(1)
+      );
     this.layout.putConstraint(
-        SpringLayout.NORTH, this.textFields.get(3),
+        SpringLayout.NORTH,
+        this.textFields.get(3),
         0,
-        SpringLayout.SOUTH, this.labels.get(3)
-    );
+        SpringLayout.SOUTH,
+        this.labels.get(3)
+      );
     this.layout.putConstraint(
-        SpringLayout.WEST, this.textFields.get(3),
+        SpringLayout.WEST,
+        this.textFields.get(3),
         PADDING_HORIZONTAL,
-        SpringLayout.EAST, this.textFields.get(2)
-    );
+        SpringLayout.EAST,
+        this.textFields.get(2)
+      );
     this.layout.putConstraint(
-        SpringLayout.EAST, this.textFields.get(3),
+        SpringLayout.EAST,
+        this.textFields.get(3),
         -PADDING_HORIZONTAL,
-        SpringLayout.EAST, this.dialog.getContentPane()
-    );
+        SpringLayout.EAST,
+        this.dialog.getContentPane()
+      );
     this.layout.putConstraint(
-        SpringLayout.NORTH, this.textFields.get(4),
+        SpringLayout.NORTH,
+        this.textFields.get(4),
         0,
-        SpringLayout.SOUTH, this.labels.get(4)
-    );
+        SpringLayout.SOUTH,
+        this.labels.get(4)
+      );
     this.layout.putConstraint(
-        SpringLayout.WEST, this.textFields.get(4),
+        SpringLayout.WEST,
+        this.textFields.get(4),
         PADDING_HORIZONTAL,
-        SpringLayout.WEST, this.dialog.getContentPane()
-    );
+        SpringLayout.WEST,
+        this.dialog.getContentPane()
+      );
     this.layout.putConstraint(
-        SpringLayout.NORTH, this.textFields.get(5),
+        SpringLayout.NORTH,
+        this.textFields.get(5),
         0,
-        SpringLayout.SOUTH, this.labels.get(5)
-    );
+        SpringLayout.SOUTH,
+        this.labels.get(5)
+      );
     this.layout.putConstraint(
-        SpringLayout.WEST, this.textFields.get(5),
+        SpringLayout.WEST,
+        this.textFields.get(5),
         PADDING_HORIZONTAL,
-        SpringLayout.EAST, this.textFields.get(4)
-    );
+        SpringLayout.EAST,
+        this.textFields.get(4)
+      );
     this.layout.putConstraint(
-        SpringLayout.NORTH, this.textFields.get(6),
+        SpringLayout.NORTH,
+        this.textFields.get(6),
         0,
-        SpringLayout.SOUTH, this.labels.get(6)
-    );
+        SpringLayout.SOUTH,
+        this.labels.get(6)
+      );
     this.layout.putConstraint(
-        SpringLayout.WEST, this.textFields.get(6),
+        SpringLayout.WEST,
+        this.textFields.get(6),
         PADDING_HORIZONTAL,
-        SpringLayout.WEST, this.dialog.getContentPane()
-    );
+        SpringLayout.WEST,
+        this.dialog.getContentPane()
+      );
     this.layout.putConstraint(
-        SpringLayout.EAST, this.textFields.get(6),
+        SpringLayout.EAST,
+        this.textFields.get(6),
         -PADDING_HORIZONTAL,
-        SpringLayout.WEST, this.buttons.get(0)
-    );
+        SpringLayout.WEST,
+        this.buttons.get(0)
+      );
   }
 
   private void initializeButtons() {
     this.buttons.forEach(b -> {
-      this.dialog.getContentPane().add(b);
-    });
+        this.dialog.getContentPane().add(b);
+      });
     this.layout.putConstraint(
-        SpringLayout.NORTH, this.buttons.get(0),
+        SpringLayout.NORTH,
+        this.buttons.get(0),
         0,
-        SpringLayout.NORTH, this.textFields.get(6)
-    );
+        SpringLayout.NORTH,
+        this.textFields.get(6)
+      );
     this.layout.putConstraint(
-        SpringLayout.SOUTH, this.buttons.get(0),
+        SpringLayout.SOUTH,
+        this.buttons.get(0),
         0,
-        SpringLayout.SOUTH, this.textFields.get(6)
-    );
+        SpringLayout.SOUTH,
+        this.textFields.get(6)
+      );
     this.layout.putConstraint(
-        SpringLayout.WEST, this.buttons.get(0),
+        SpringLayout.WEST,
+        this.buttons.get(0),
         -24,
-        SpringLayout.EAST, this.buttons.get(0)
-    );
+        SpringLayout.EAST,
+        this.buttons.get(0)
+      );
     this.layout.putConstraint(
-        SpringLayout.EAST, this.buttons.get(0),
+        SpringLayout.EAST,
+        this.buttons.get(0),
         -PADDING_HORIZONTAL,
-        SpringLayout.EAST, this.dialog.getContentPane()
-    );
+        SpringLayout.EAST,
+        this.dialog.getContentPane()
+      );
     this.layout.putConstraint(
-        SpringLayout.NORTH, this.buttons.get(1),
+        SpringLayout.NORTH,
+        this.buttons.get(1),
         -BUTTON_HEIGHT,
-        SpringLayout.SOUTH, this.buttons.get(1)
-    );
+        SpringLayout.SOUTH,
+        this.buttons.get(1)
+      );
     this.layout.putConstraint(
-        SpringLayout.SOUTH, this.buttons.get(1),
+        SpringLayout.SOUTH,
+        this.buttons.get(1),
         -PADDING_VERTICAL,
-        SpringLayout.SOUTH, this.dialog.getContentPane()
-    );
+        SpringLayout.SOUTH,
+        this.dialog.getContentPane()
+      );
     this.layout.putConstraint(
-        SpringLayout.WEST, this.buttons.get(1),
+        SpringLayout.WEST,
+        this.buttons.get(1),
         -BUTTON_WIDTH * 2,
-        SpringLayout.EAST, this.buttons.get(1)
-    );
+        SpringLayout.EAST,
+        this.buttons.get(1)
+      );
     this.layout.putConstraint(
-        SpringLayout.EAST, this.buttons.get(1),
+        SpringLayout.EAST,
+        this.buttons.get(1),
         -PADDING_HORIZONTAL,
-        SpringLayout.EAST, this.dialog.getContentPane()
-    );
+        SpringLayout.EAST,
+        this.dialog.getContentPane()
+      );
     this.layout.putConstraint(
-        SpringLayout.NORTH, this.buttons.get(2),
+        SpringLayout.NORTH,
+        this.buttons.get(2),
         -BUTTON_HEIGHT,
-        SpringLayout.SOUTH, this.buttons.get(2)
-    );
+        SpringLayout.SOUTH,
+        this.buttons.get(2)
+      );
     this.layout.putConstraint(
-        SpringLayout.SOUTH, this.buttons.get(2),
+        SpringLayout.SOUTH,
+        this.buttons.get(2),
         -PADDING_VERTICAL,
-        SpringLayout.SOUTH, this.dialog.getContentPane()
-    );
+        SpringLayout.SOUTH,
+        this.dialog.getContentPane()
+      );
     this.layout.putConstraint(
-        SpringLayout.WEST, this.buttons.get(2),
+        SpringLayout.WEST,
+        this.buttons.get(2),
         -BUTTON_WIDTH * 2,
-        SpringLayout.EAST, this.buttons.get(2)
-    );
+        SpringLayout.EAST,
+        this.buttons.get(2)
+      );
     this.layout.putConstraint(
-        SpringLayout.EAST, this.buttons.get(2),
+        SpringLayout.EAST,
+        this.buttons.get(2),
         -PADDING_HORIZONTAL,
-        SpringLayout.WEST, this.buttons.get(1)
-    );
+        SpringLayout.WEST,
+        this.buttons.get(1)
+      );
   }
 
   List<JLabel> makeLabels() {
@@ -358,7 +439,6 @@ class NewDialog implements ActionListener {
     out.add(new JLabel("WIDTH"));
     out.add(new JLabel("HEIGHT"));
     out.add(new JLabel("PATH"));
-
     out.forEach(l -> {
       l.setFont(FONT_DIALOG);
     });
@@ -374,7 +454,6 @@ class NewDialog implements ActionListener {
     out.add(new JTextField(8));
     out.add(new JTextField(8));
     out.add(new JTextField(20));
-
     out.stream().forEach(f -> f.setFont(FONT_TEXT_FIELD));
     return Collections.unmodifiableList(out);
   }

@@ -1,41 +1,42 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-freezing=0
-echo
-echo
-echo "Freezing Sequence Metadata Maker (makefreeze.sh)"
-echo "------------------------------------------------"
-echo "u0r0 by Brendon, 01/19/2019."
-echo
-echo
+{
+  declare -p ews || declare -A ews=([base]="${0%/*}" [exec]="${0}" \
+      [name]='Freezing Sequence Metadata Maker' [sign]='u0r1 by Brendon, 05/05/2023.' \
+      [desc]='mJPEGfPlay supplement. https://ed7n.github.io/mjpegfplay')
+} &> /dev/null
 
-if [[ -e makefreeze.out ]]; then
-    read -n 1 -p "<makefreeze/?> [y] to delete existing makefreeze.out, append otherwise. " in
-    echo
+# Output file.
+readonly FSM_OUT="${0%.*}"'.txt'
 
-    if [[ "$in" == "y" ]]; then
-        rm makefreeze.out
-    fi
-fi
-read -p "<makefreeze/?> Input starting point: " start
-read -p "<makefreeze/?> Input ending point: " end
-read -p "<makefreeze/?> Input file extension: " ext
-echo "<makefreeze/i> Generating freezing sequence metadata..."
-echo "    freezePoints:" >> makefreeze.out
-
-while (( $start < $end )); do
-    if [[ $freezing == 0 ]] && ! [[ -e $(($start + 1)).$ext ]]; then
-        echo "$start," >> makefreeze.out
-        freezing=1
-    elif [[ $freezing == 1 ]] && [[ -e $(($start + 1)).$ext ]]; then
-        echo "$(($start + 1))," >> makefreeze.out
-        freezing=0
-    fi
-    ((start++))
+echo -e "${ews[name]}"' '"${ews[sign]}"'\n——'"${ews[desc]}"'\n
+Working directory:\n  '"$(pwd)"'\nOutput file:\n  '"${FSM_OUT}"
+[ -e "${FSM_OUT}" ] && {
+  echo 'Exists.'
+  exit 1
+}
+echo -e '\033]2;'"${ews[name]}"'\007Enter starting point.'
+read -p '> ' fsmSta
+echo 'Enter ending point.'
+read -p '> ' fsmEnd
+echo 'Enter extension.'
+read -p '> ' fsmExt
+admExt='.'"${admExt}"
+echo 'Now making.'
+echo '    freezePoints:' >> "${FSM_OUT}"
+while (( fsmSta < fsmEnd )); do
+  (( "${#fsmFrz}" )) && {
+    [ -e $(( fsmSta + 1 ))"${fsmExt}" ] && {
+      fsmFrz=
+      fsmPts+=$(( fsmSta + 1 ))','$'\n'
+    } || :
+  } || {
+    [ -e $(( fsmSta + 1 ))"${fsmExt}" ] || {
+      fsmFrz='frz'
+      fsmPts+="${fsmSta}"','$'\n'
+    }
+  }
+  (( fsmSta++ ))
 done
-echo "    :freezePoints    # delete the last comma (,)" >> makefreeze.out
-echo "<makefreeze/i> ...done, check ./makefreeze.out"
-echo
-echo
-echo "--------------------"
-echo "End of makefreeze.sh"
+echo -e "${fsmPts:0:-2}"'\n    :freezePoints' >> "${FSM_OUT}"
+echo -e '\033]2;\007Done.'

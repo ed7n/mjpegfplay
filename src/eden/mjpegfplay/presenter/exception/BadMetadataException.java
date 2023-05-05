@@ -12,18 +12,18 @@ public class BadMetadataException extends MalformedSequenceException {
   /** Makes a {@code BadMetadataException} */
   public BadMetadataException() {
     super(
-        "Sequence Metadata File",
-        "It is incomplete or contains values that are incorrectly formatted.",
-        "Complete, review, or replace the metadata file, depending on the situation."
+      "Sequence Metadata File",
+      "It is incomplete or contains values that are incorrectly formatted.",
+      "Complete, review, or replace the metadata file, depending on the situation."
     );
   }
 
   /** Makes a {@code BadMetadataException} with the given subject */
   public BadMetadataException(String subject) {
     super(
-        "Sequence Metadata File - " + subject,
-        "It is incomplete or contains values that are incorrectly formatted.",
-        "Complete, review, or replace the metadata file, depending on the situation."
+      "Sequence Metadata File - " + subject,
+      "It is incomplete or contains values that are incorrectly formatted.",
+      "Complete, review, or replace the metadata file, depending on the situation."
     );
   }
 }

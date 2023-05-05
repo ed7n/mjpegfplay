@@ -34,14 +34,15 @@ public class FileFrameSequence extends FrameSequence {
    * @throws IllegalArgumentException If any of the numerical arguments are
    * malformed
    */
-  public FileFrameSequence(String name,
-      int start,
-      int end,
-      byte rate,
-      short width,
-      short height,
-      String extension)
-      throws IllegalArgumentException {
+  public FileFrameSequence(
+    String name,
+    int start,
+    int end,
+    byte rate,
+    short width,
+    short height,
+    String extension
+  ) throws IllegalArgumentException {
     super(name, start, end, rate, width, height);
     this.extension = extension;
   }
@@ -60,16 +61,16 @@ public class FileFrameSequence extends FrameSequence {
   /** {@inheritDoc} */
   @Override
   public boolean equals(Object o) {
-    return o == this || (o != null && o.getClass() == getClass() && equals(
-        (FileFrameSequence) o));
+    return (
+      o == this ||
+      (o != null && o.getClass() == getClass() && equals((FileFrameSequence) o))
+    );
   }
 
   /** {@inheritDoc} */
   @Override
   public int hashCode() {
-    return Objects.hash(
-        name, start, end, rate, width, height, extension
-    );
+    return Objects.hash(name, start, end, rate, width, height, extension);
   }
 
   /**

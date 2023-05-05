@@ -11,11 +11,9 @@ public class NullPresenter implements Presenter {
 
   /** Does absolutely nothing */
   @Override
-  public void call(int event) {
-  }
+  public void call(int event) {}
 
   /** Does absolutely nothing */
   @Override
-  public void call(String message0, String message1) {
-  }
+  public void call(String message0, String message1) {}
 }

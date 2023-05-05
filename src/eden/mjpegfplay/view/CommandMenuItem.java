@@ -1,14 +1,14 @@
 package eden.mjpegfplay.view;
 
+import static eden.mjpegfplay.view.UIConstants.*;
+
 import java.awt.event.ActionListener;
 import javax.swing.JMenuItem;
-
-import static eden.mjpegfplay.view.UIConstants.*;
 
 /**
  * A CommandMenuItem is a GUI element on which the user can tap to send its
  * command to this application.
- * <p>
+ *
  * This class is a convenient JMenuItem factory for menu items.
  *
  * @author Brendon

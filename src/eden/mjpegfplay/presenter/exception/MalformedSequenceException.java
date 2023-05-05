@@ -5,7 +5,7 @@ package eden.mjpegfplay.presenter.exception;
  * {@code Sequence} is malformed. Check with the {@code getSubject} and
  * {@code getProblem} methods for details, and try {@code getRemedy} for a
  * suggestion on how to resolve it.
- * <p>
+ *
  * Classes throwing this {@code Exception} must supply all information for the
  * utmost brevity on error reporting.
  *
@@ -16,10 +16,8 @@ public class MalformedSequenceException extends Exception {
 
   /** The subject that has the problem */
   private final String subject;
-
   /** The problem that the subject has */
   private final String problem;
-
   /** Suggested remedy to the problem */
   private final String remedy;
 
@@ -27,9 +25,11 @@ public class MalformedSequenceException extends Exception {
    * Makes a {@code MalformedSequenceException} with the given subject, problem,
    * and remedy.
    */
-  public MalformedSequenceException(String subject,
-      String problem,
-      String remedy) {
+  public MalformedSequenceException(
+    String subject,
+    String problem,
+    String remedy
+  ) {
     super(subject + ": " + problem);
     this.subject = subject;
     this.problem = problem;

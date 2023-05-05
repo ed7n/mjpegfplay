@@ -7,22 +7,22 @@ import java.util.concurrent.atomic.AtomicInteger;
  * itself, or upon an existing Java timer. It overcomes timing discrepancies
  * introduced by the low-precision nature of timers by adjusting its delay as
  * necessary, alternating between floor and ceil intervals.
- * <p>
+ *
  * Java's timers run at the millisecond-level of precision. Non-integral delays
  * may introduce timing discrepancies. For example, for a fire rate of 60,
  * {@code (1000 / 60 = 16.67)} which is then truncated to an integral value. A
  * timer whose delay is set to this value may run either too fast (by 40 ms) or
  * too slow (by 20 ms), depending on the environment JVM runs on.
- * <p>
+ *
  * A workaround is to add a housekeeping routine in atop the timer's tasks. This
  * routine calculates the difference in time between the current and last tick,
  * then adjusts the timer's delay to either floor, if the difference is too
  * large, or ceil, if the difference is too small.
- * <p>
+ *
  * Subclasses are encouraged to utilize the counter for flexibility. Usually, it
  * is to be incremented on every tick within the range {@code [0, fireRate -
  * 1]}:
- * <p>
+ *
  * {@code this.counter.set(((this.counter.get() + 1) % this.fireRate));}
  *
  * @author Brendon
@@ -32,22 +32,16 @@ public abstract class EDENTimer {
 
   /** Default number of fires per second */
   public static final short DEFAULT_FIRE_RATE = 60;
-
   /** Internal counter for external tracking purposes, if needed. */
   protected AtomicInteger counter;
-
   /** Unix epoch when the Timer is last fired */
   protected long time;
-
   /** Number of event fires per second */
   protected short fireRate;
-
   /** Timer delay for floor mode */
   protected short delayActual;
-
   /** Timer delay for ceil mode */
   protected short delayOffset;
-
   /**
    * Indicates whether this EDENTimer is under ceil mode, although its main
    * purpose is to save computation time.
@@ -66,10 +60,8 @@ public abstract class EDENTimer {
   public EDENTimer(short fireRate) {
     this.counter = new AtomicInteger(0);
     this.time = 0;
-
-    this.fireRate = (fireRate < 1) || (fireRate > 1000) ? DEFAULT_FIRE_RATE
-        : fireRate;
-
+    this.fireRate =
+      (fireRate < 1) || (fireRate > 1000) ? DEFAULT_FIRE_RATE : fireRate;
     this.clock = false;
     makeTimes();
   }

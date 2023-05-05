@@ -1,51 +1,64 @@
 package eden.mjpegfplay.view;
 
-import eden.mjpegfplay.presenter.ApplicationInstance;
+import static eden.common.shared.Constants.EOL;
+import static eden.common.shared.Constants.SPACE;
+import static eden.mjpegfplay.model.ApplicationInformation.*;
+import static eden.mjpegfplay.model.SequenceTypes.*;
 
+import eden.mjpegfplay.presenter.ApplicationInstance;
+import java.io.File;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Scanner;
-
-import static eden.mjpegfplay.model.ApplicationInformation.*;
-import static eden.mjpegfplay.model.SequenceTypes.*;
 
 /**
  * This class represents the fallback view in the model-view-presenter
  * architectural pattern of this application.
  *
  * @author Brendon
- * @version u0r4, 11/06/2021.
+ * @version u0r5, 05/05/2023.
  */
 public class ConsoleInterface implements Runnable {
 
   /** Default number of input attempts */
   public static final byte INPUT_ATTEMPTS = 3;
-
   private static final String[] MAIN = new String[] {
-    "File", "View", "Transport", "Audio", "Help"
+    "File",
+    "View",
+    "Transport",
+    "Audio",
+    "Help",
   };
   private static final String[] FILE = new String[] {
-    "New", "Open", "Open Freezing", "Save", "Reload", "Close"
+    "New...",
+    "Load...",
+    "Load Freezing",
+    "Load Music...",
+    "Reload",
+    "Eject",
   };
-  private static final String[] VIEW = new String[] {
-    "Sequence Information"
-  };
+  private static final String[] VIEW = new String[] { "Sequence Information" };
   private static final String[] TRANSPORT = new String[] {
-    "{->} Play", "{||} Pause", "{[]} Stop",
-    "{<<} Fast Rewind", "{>>} Fast Forward", "{<|} Step Backward",
-    "{|>} Step Forward", "{|<} Jump To Start", "{>|} Jump To End",
-    "{>#} Jump To...", "{<-} Trickplay"
+    "-> Play",
+    "|| Pause",
+    "[] Stop",
+    "<< Fast Rewind",
+    ">> Fast Forward",
+    "<| Step Backward",
+    "|> Step Forward",
+    "|< Jump To Start",
+    ">| Jump To End",
+    "># Jump To...",
+    "<- Trickplay",
+    "Set Lens Count...",
   };
-  private static final String[] HELP = new String[] {
-    "About"
-  };
-
+  private static final String[] HELP = new String[] { "About" };
+  private static final String ERROR_NO_SEQUENCE = "No sequence.";
+  private static final String DONE = "Done.";
   /** User instance object */
   private final ApplicationInstance instance;
-
   /** Scanner from which user inputs are to be scanned */
   private final Scanner scanner;
-
   /** PrintStream to which interface messages are to be printed */
   private final PrintStream out;
 
@@ -72,12 +85,10 @@ public class ConsoleInterface implements Runnable {
    */
   private void uiMain() {
     byte in;
-
     while (true) {
       sayHead(APPLICATION_NAME);
       sayMenu(MAIN);
       in = askChoice((byte) 0, (byte) MAIN.length);
-
       switch (in) {
         case 1:
           uiFile();
@@ -105,32 +116,30 @@ public class ConsoleInterface implements Runnable {
    */
   private void uiFile() {
     byte in;
-
     while (true) {
       sayHead("File");
       sayMenu(FILE);
       in = askChoice((byte) 0, (byte) FILE.length);
-
       switch (in) {
         case 1:
           uiNew();
           break;
         case 2:
-          uiOpen(SEQUENCE);
+          uiLoad(SEQUENCE);
           break;
         case 3:
-          uiOpen(FREEZING_SEQUENCE);
+          uiLoad(FREEZING_SEQUENCE);
           break;
         case 4:
-          uiSave();
+          uiLoad(MUSIC_SEQUENCE);
           break;
         case 5:
           uiReload();
           break;
         case 6:
-          uiClose();
+          uiEject();
           break;
-        case 0:
+        case 7:
           return;
       }
     }
@@ -140,82 +149,80 @@ public class ConsoleInterface implements Runnable {
    * UI: /File/New
    */
   private void uiNew() {
-    if (this.instance.isModified())
-      uiSavePrompt();
-    this.instance.close();
     int start, end, rate, width, height;
     sayHead("New");
-    String path = askString("Input path to sequence files");
-    String name = askString("Input sequence name");
-
+    String path = askString("Enter path to sequence files.");
+    String name = askString("Enter sequence name.");
     while (true) {
-      start = askInteger("Input starting point");
-      end = askInteger("Input ending point");
-
+      start = askInteger("Enter starting point.");
+      end = askInteger("Enter ending point.");
       if (end <= start) {
-        sayError("Invalid range: "
-            + "A sequence may not end (before) where it starts."
+        sayError(
+          "Invalid range: A sequence may not end on or before where it starts."
         );
         continue;
       }
       break;
     }
     while (true) {
-      rate = askInteger(
-          "Input advance rate"
-      );
+      rate = askInteger("Enter advance rate [1, 127].");
       if (!isInputWithinRange(1, Byte.MAX_VALUE, rate)) {
-        sayError("Invalid rate. Range: [1, 127]");
+        sayError("Invalid rate.");
         continue;
       }
       break;
     }
     while (true) {
-      width = askInteger("Input projection width");
-
+      width = askInteger("Enter projection width [1, 32767].");
       if (!isInputWithinRange(1, Short.MAX_VALUE, width)) {
-        sayError("Invalid width. Range: [1, 32767]");
+        sayError("Invalid width.");
         continue;
       }
       break;
     }
     while (true) {
-      height = askInteger("Input projection height");
-
+      height = askInteger("Enter projection height [1, 32767].");
       if (!isInputWithinRange(1, Short.MAX_VALUE, height)) {
-        sayError("Invalid height. Range: [1, 32767]");
+        sayError("Invalid height.");
         continue;
       }
       break;
     }
     try {
-      sayWarning("W A I T ...");
-
+      sayInfo("Now making.");
       this.instance.make(
-          path, name, start, end,
-          rate, (short) width, (short) height
-      );
-      sayInfo("...MAKE SUCCESS");
+          path,
+          name,
+          start,
+          end,
+          rate,
+          (short) width,
+          (short) height
+        );
+      sayInfo(DONE);
     } catch (Exception e) {
-      sayError("...MAKE FAILED\n" + e.toString());
+      sayError(e.toString());
     }
   }
 
   /**
-   * UI: /File/Open
+   * UI: /File/Load
    */
-  private void uiOpen(String type) {
-    if (this.instance.isModified())
+  private void uiLoad(String type) {
+    if (this.instance.isModified()) {
       uiSavePrompt();
-    sayHead("Open");
-    String in = askString("Input path");
-
+    }
+    sayHead("Load");
+    String in = askString("Enter path.");
+    if (!in.endsWith(File.separator)) {
+      in += File.separator;
+    }
     try {
-      sayWarning("W A I T ...");
+      sayInfo("Now loading.");
       this.instance.open(in, type);
-      sayInfo("...LOAD SUCCESS");
+      sayInfo(DONE);
     } catch (Exception e) {
-      sayError("...LOAD FAILED\n" + e.toString());
+      sayError(e.toString());
     }
   }
 
@@ -224,17 +231,16 @@ public class ConsoleInterface implements Runnable {
    */
   private void uiSave() {
     sayHead("Save");
-
     if (!this.instance.isLoaded()) {
-      sayError("No sequence loaded");
+      sayError(ERROR_NO_SEQUENCE);
       return;
     }
     try {
-      sayWarning("W A I T ...");
+      sayInfo("Now saving.");
       this.instance.save();
-      sayInfo("...SAVE SUCCESS");
+      sayInfo(DONE);
     } catch (Exception e) {
-      sayError("...SAVE FAILED: " + e.toString());
+      sayError(e.toString());
     }
   }
 
@@ -243,49 +249,46 @@ public class ConsoleInterface implements Runnable {
    */
   private void uiReload() {
     if (!this.instance.isLoaded()) {
-      sayError("No sequence loaded");
+      sayError(ERROR_NO_SEQUENCE);
       return;
     }
-    if (this.instance.isModified())
+    if (this.instance.isModified()) {
       uiSavePrompt();
+    }
     sayHead("Reload");
-
     try {
-      sayWarning("W A I T ...");
+      sayInfo("Now reloading.");
       this.instance.reload();
-      sayInfo("...RELOAD SUCCESS");
+      sayInfo(DONE);
     } catch (Exception e) {
-      sayError("...RELOAD FAILED: " + e.toString());
+      sayError(e.toString());
     }
   }
 
   /**
    * UI: /File/Close
    */
-  private void uiClose() {
+  private void uiEject() {
     if (!this.instance.isLoaded()) {
-      sayError("No sequence loaded");
+      sayError(ERROR_NO_SEQUENCE);
       return;
     }
-    if (this.instance.isModified())
+    if (this.instance.isModified()) {
       uiSavePrompt();
-    sayHead("Close");
+    }
+    sayHead("Eject");
     this.instance.close();
-    sayInfo("Sequence closed");
+    sayInfo("Sequence ejected.");
   }
 
   /**
-   * UI: /File/.SavePrompt
+   * UI: /File/SavePrompt
    */
   private void uiSavePrompt() {
     byte in;
-
     while (true) {
-      sayQuestion(
-          "Save the currently loaded sequence?\n[1] Yes  [0] No\n"
-      );
+      sayQuestion("Save the current sequence?" + EOL + "[1] Yes  [0] No" + EOL);
       in = askChoice((byte) 0, (byte) 1);
-
       switch (in) {
         case 1:
           uiSave();
@@ -300,12 +303,10 @@ public class ConsoleInterface implements Runnable {
    */
   private void uiView() {
     byte in;
-
     while (true) {
       sayHead("View");
       sayMenu(VIEW);
       in = askChoice((byte) 0, (byte) VIEW.length);
-
       switch (in) {
         case 1:
           uiSequenceInformation();
@@ -321,36 +322,51 @@ public class ConsoleInterface implements Runnable {
    */
   private void uiSequenceInformation() {
     if (!this.instance.isLoaded()) {
-      sayError("No sequence loaded");
+      sayError(ERROR_NO_SEQUENCE);
       return;
     }
     sayHead("Sequence Information");
-
     this.out.println(
-        "Name: " + this.instance.getName() + "\n" + "Range: [" + this.instance
-        .getStart() + ", " + this.instance.getEnd() + "], " + this.instance
-        .getLength() + "\n" + "Rate: " + this.instance.getRate() + " /s\n"
-        + "Length: " + this.instance.getLengthSecond() + "s\n" + "Elapsed: "
-        + this.instance.getElapsedSecond() + "s (" + (100 * this.instance
-        .getElapsedPercent()) + "%)\n"
-    );
+        "Name: " +
+        this.instance.getName() +
+        EOL +
+        "Range: [" +
+        this.instance.getStart() +
+        ", " +
+        this.instance.getEnd() +
+        "], " +
+        this.instance.getLength() +
+        EOL +
+        "Rate: " +
+        this.instance.getRate() +
+        "/s" +
+        EOL +
+        "Length: " +
+        this.instance.getLengthSecond() +
+        "s" +
+        EOL +
+        "Elapsed: " +
+        this.instance.getElapsedSecond() +
+        "s (" +
+        this.instance.getElapsedPercent() *
+        100 +
+        "%)" +
+        EOL
+      );
   }
 
   /**
    * UI: /Transport
    */
   private void uiTransport() {
-    if (!this.instance.isLoaded()) {
-      sayError("No sequence loaded");
-      return;
-    }
     byte in;
-
     while (true) {
       sayHead("Transport");
       sayMenu(TRANSPORT);
       in = askChoice((byte) 0, (byte) TRANSPORT.length);
-
+      if (in > 0 && in < 12) {
+        continue;
+      }
       switch (in) {
         case 1:
           this.instance.play();
@@ -385,6 +401,9 @@ public class ConsoleInterface implements Runnable {
         case 11:
           this.instance.trickPlay();
           break;
+        case 12:
+          uiSetLensCount();
+          break;
         case 0:
           return;
       }
@@ -395,8 +414,25 @@ public class ConsoleInterface implements Runnable {
    * UI: /Transport/JumpTo
    */
   private void uiJumpTo() {
-    if (!this.instance.jump(askInteger("Input frame")))
-      sayError("Invalid frame");
+    if (!this.instance.jump(askInteger("Enter frame number."))) {
+      sayError("Invalid frame number.");
+    }
+  }
+
+  /**
+   * UI: /Transport/SetLensCount
+   */
+  private void uiSetLensCount() {
+    if (this.instance.isLoaded()) {
+      sayError("Eject the current sequence first.");
+      return;
+    }
+    int in = askInteger("Enter render lens count [1, 9].");
+    if (in < 1 || in > 9) {
+      sayError("Invalid count.");
+      return;
+    }
+    this.instance.setLensCount((byte) in);
   }
 
   /**
@@ -404,16 +440,14 @@ public class ConsoleInterface implements Runnable {
    */
   private void uiAudio() {
     if (!this.instance.isLoaded()) {
-      sayError("No sequence loaded");
+      sayError(ERROR_NO_SEQUENCE);
       return;
     }
     byte in;
-
     while (true) {
       sayHead("Audio");
       sayInfo("Select audio track. 0 to output all tracks.");
       in = askChoice((byte) 0, Byte.MAX_VALUE);
-
       if (in >= 0) {
         this.instance.setTrack(in);
         break;
@@ -426,12 +460,10 @@ public class ConsoleInterface implements Runnable {
    */
   private void uiHelp() {
     byte in;
-
     while (true) {
       sayHead("Help");
       sayMenu(HELP);
       in = askChoice((byte) 0, (byte) HELP.length);
-
       switch (in) {
         case 1:
           uiAbout();
@@ -447,10 +479,20 @@ public class ConsoleInterface implements Runnable {
    */
   private void uiAbout() {
     sayHead("About");
-
-    this.out.print(APPLICATION_NAME + " " + APPLICATION_VERSION + " "
-        + "by Brendon," + " " + APPLICATION_DATE + ".\n" + "——"
-        + APPLICATION_DESCRIPTION + " " + APPLICATION_URL + "\n");
+    this.out.print(
+        APPLICATION_NAME +
+        SPACE +
+        APPLICATION_VERSION +
+        " by Brendon, " +
+        APPLICATION_DATE +
+        "." +
+        EOL +
+        "——" +
+        APPLICATION_DESCRIPTION +
+        SPACE +
+        APPLICATION_URL +
+        EOL
+      );
   }
 
   /** Prints the given information message */
@@ -475,28 +517,21 @@ public class ConsoleInterface implements Runnable {
 
   /** Prints the given header message */
   private void sayHead(String head) {
-    StringBuilder builder = new StringBuilder("\n\n");
-    builder.append(head);
-    builder.append('\n');
-
-    for (int i = 0; i < head.length(); i++)
-      builder.append('-');
-    this.out.println(builder.toString());
+    this.out.println(new StringBuilder(head).append(":").toString());
   }
 
   /** Prints the given String[] as a choice menu */
   private void sayMenu(String[] menu) {
     StringBuilder builder = new StringBuilder();
-
     for (int i = 1; i <= menu.length; i++) {
-      builder.append('[');
-      builder.append(i);
-      builder.append("] ");
-      builder.append(menu[i - 1]);
-      builder.append('\n');
+      builder
+        .append('[')
+        .append(i)
+        .append("] ")
+        .append(menu[i - 1])
+        .append(EOL);
     }
-    builder.append("[0] Return\n");
-    this.out.println(builder.toString());
+    this.out.println(builder.append("[0] Return").toString());
   }
 
   /** Prompts the user for a byte-ranged input */
@@ -509,21 +544,17 @@ public class ConsoleInterface implements Runnable {
    */
   private byte askChoice(byte from, byte to, byte tries) {
     byte in = Byte.MIN_VALUE;
-
     while (tries-- > 0) {
-      this.out.print("[" + APPLICATION_NAME + "/?] " + "Input [" + from + '-'
-          + to + "]: "
-      );
+      this.out.print("> ");
       try {
         in = Byte.parseByte(scanner.nextLine());
-
         if (!isInputWithinRange(from, to, in)) {
-          sayError("Invalid input");
+          sayError("Invalid input.");
           continue;
         }
         break;
       } catch (NumberFormatException e) {
-        sayError("Bad input");
+        sayError("Bad input.");
       }
     }
     return in;
@@ -540,12 +571,11 @@ public class ConsoleInterface implements Runnable {
    */
   private int askInteger(String prompt, byte tries) {
     while (tries-- > 0) {
-      this.out.print("[" + APPLICATION_NAME + "/?] " + prompt + ": ");
-
+      this.out.print("[" + APPLICATION_NAME + "/?] " + prompt + EOL + "> ");
       try {
         return Integer.parseInt(scanner.nextLine());
       } catch (NumberFormatException e) {
-        sayError("Bad input");
+        sayError("Bad input.");
       }
     }
     return 0;
@@ -553,7 +583,7 @@ public class ConsoleInterface implements Runnable {
 
   /** Prompts the user for a String input with the given String */
   private String askString(String prompt) {
-    this.out.print("[" + APPLICATION_NAME + "/?]" + prompt + "\n>: ");
+    this.out.print("[" + APPLICATION_NAME + "/?] " + prompt + EOL + "> ");
     return scanner.nextLine();
   }
 

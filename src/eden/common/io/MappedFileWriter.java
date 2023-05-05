@@ -11,7 +11,6 @@ import java.util.Map;
  * @version u0r5, 11/05/2018.
  */
 public interface MappedFileWriter extends FileWorker {
-
   /**
    * Writes data from the given {@code Map} to a file
    *
@@ -21,7 +20,6 @@ public interface MappedFileWriter extends FileWorker {
    *
    * @throws IOException If a write operation fails or is interrupted
    */
-  void write(Map<String, String> map) throws
-      IllegalArgumentException,
-      IOException;
+  void write(Map<String, String> map)
+    throws IllegalArgumentException, IOException;
 }

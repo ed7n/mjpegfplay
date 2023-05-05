@@ -1,5 +1,4 @@
 // TODO: JUnit conversion to standard assert statements
-
 ////package eden.common.io;
 //
 //import org.junit.jupiter.api.BeforeEach;
@@ -74,7 +73,7 @@
 //    public void testEmptyKey() throws IOException {
 //
 //        try {
-//            assertTrue(readerMapped.read("").equals(
+//            assertTrue(readerMapped.read(NUL_STRING).equals(
 //                "Don't touch me either!"));
 //        } catch (NoSuchElementException e) {}
 //    }

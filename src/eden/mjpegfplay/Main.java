@@ -1,20 +1,20 @@
 package eden.mjpegfplay;
 
+import static eden.common.shared.Constants.EOL;
+import static eden.common.shared.Constants.SPACE;
+import static eden.mjpegfplay.model.ApplicationInformation.*;
+
 import eden.mjpegfplay.presenter.ApplicationInstance;
-
 import eden.mjpegfplay.view.ConsoleInterface;
-
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-
-import static eden.mjpegfplay.model.ApplicationInformation.*;
 
 /**
  * This class serves as the entry point to this application. It contains the
  * main method from which the application initializes.
  *
  * @author Brendon
- * @version u0r4, 11/06/2021.
+ * @version u0r5, 05/05/2023.
  */
 public class Main {
 
@@ -26,31 +26,52 @@ public class Main {
   public static void main(String[] args) {
     boolean console = false;
     boolean noOpenGl = false;
-
-    for (String s : args)
+    for (String s : args) {
       switch (s.toLowerCase()) {
-        case "--nativelaf":
-          try {
-          UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | IllegalAccessException
-            | InstantiationException | UnsupportedLookAndFeelException e) {
-        }
-        break;
         case "--console":
           console = true;
+          break;
+        case "--nativelaf":
+          try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+          } catch (
+            ClassNotFoundException
+            | IllegalAccessException
+            | InstantiationException
+            | UnsupportedLookAndFeelException e
+          ) {}
           break;
         case "--noopengl":
           noOpenGl = true;
       }
-    System.out.println(APPLICATION_NAME + " " + APPLICATION_VERSION + " "
-        + "by Brendon," + " " + APPLICATION_DATE + ".\n" + "——"
-        + APPLICATION_DESCRIPTION + " " + APPLICATION_URL + "\n");
-    System.out.println("Usage: (--nativelaf|--console|--noopengl)...\n");
-    if (!noOpenGl)
+    }
+    System.out.println(
+      APPLICATION_NAME +
+      SPACE +
+      APPLICATION_VERSION +
+      " by Brendon, " +
+      APPLICATION_DATE +
+      "." +
+      EOL +
+      "——" +
+      APPLICATION_DESCRIPTION +
+      SPACE +
+      APPLICATION_URL +
+      EOL +
+      EOL +
+      "Usage: --console --nativelaf --noopengl" +
+      EOL +
+      EOL +
+      "The graphical interface will always be launched." +
+      EOL
+    );
+    if (!noOpenGl) {
       System.setProperty("sun.java2d.opengl", "True");
-    if (console)
+    }
+    if (console) {
       new ConsoleInterface().run();
-    else
+    } else {
       new ApplicationInstance();
+    }
   }
 }

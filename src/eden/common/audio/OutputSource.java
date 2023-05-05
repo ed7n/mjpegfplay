@@ -19,34 +19,26 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 public class OutputSource {
 
   private final File file;
-
   /** Audio data arrangement definition */
   private final AudioFormat format;
-
   /** Amount of data from the start of the InputStream to its end in bytes */
   private final int streamSize;
-
   /** Stream of audio data to be read from */
   private InputStream stream;
-
   /** Exception defining the death of this OutputSource */
   private Exception deathCause;
-
   /**
    * Amount of data from the start of the InputStream to where the mark is set
    * in bytes
    */
   private int markPosition;
-
   /**
    * Indicates whether the InputStream resets to its start once it reaches its
    * end
    */
   private boolean loop;
-
   /** Indicates whether the InputStream has reached its end */
   private boolean done;
-
   /**
    * Indicates whether the InputStream either was thrown an IOException, or has
    * been closed, preventing further operations.
@@ -60,7 +52,7 @@ public class OutputSource {
    * @throws IOException If an I/O error occurs
    */
   public OutputSource(File file)
-      throws IOException, UnsupportedAudioFileException {
+    throws IOException, UnsupportedAudioFileException {
     this(file, false);
   }
 
@@ -71,7 +63,7 @@ public class OutputSource {
    * @throws IOException If an I/O error occurs
    */
   public OutputSource(File file, boolean loop)
-      throws IOException, UnsupportedAudioFileException {
+    throws IOException, UnsupportedAudioFileException {
     this.file = file;
     this.stream = AudioSystem.getAudioInputStream(file);
     this.format = AudioSystem.getAudioFileFormat(file).getFormat();
@@ -92,20 +84,22 @@ public class OutputSource {
    * {@code -1} If this {@code OutputSource} has went or is dead
    */
   public int read(byte[] buffer) {
-    if (this.dead)
+    if (this.dead) {
       return -1;
-    else if (buffer == null || (this.done && !this.loop))
+    } else if (buffer == null || (this.done && !this.loop)) {
       return 0;
+    }
     try {
-      if (this.loop)
+      if (this.loop) {
         return readSeamlessly(buffer);
+      }
       int readSize = this.stream.read(buffer, 0, buffer.length);
-
       if (readSize < buffer.length) {
         this.done = true;
         zero(buffer, readSize < 0 ? 0 : readSize);
-      } else if (this.stream.available() == 0)
+      } else if (this.stream.available() == 0) {
         this.done = true;
+      }
       return readSize;
     } catch (IOException e) {
       die(e);
@@ -116,7 +110,7 @@ public class OutputSource {
   /**
    * Skips over the given amount of data from the {@code InputStream} of this
    * {@code OutputSource} in bytes.
-   * <p>
+   *
    * Caution with PCM streams: When calling this method prior to mark, ensure
    * that {@code amount} is divisible by the frame size. Otherwise the resulting
    * audio turns into noise upon looping. However, if {@code amount} is
@@ -126,8 +120,9 @@ public class OutputSource {
    * getFormat().getFrameSize()}.
    */
   public void skip(long amount) {
-    if (this.dead)
+    if (this.dead) {
       return;
+    }
     try {
       if (this.loop) {
         skipSeamlessly(amount);
@@ -135,7 +130,6 @@ public class OutputSource {
       }
       while (amount > 0) {
         amount -= this.stream.skip(amount);
-
         if (this.stream.available() == 0) {
           this.done = true;
           return;
@@ -151,8 +145,9 @@ public class OutputSource {
    * Marks the current {@code InputStream} position of this {@code OutputSource}
    */
   public void mark() {
-    if (this.dead)
+    if (this.dead) {
       return;
+    }
     try {
       this.markPosition = this.streamSize - this.stream.available();
     } catch (IOException e) {
@@ -165,8 +160,9 @@ public class OutputSource {
    * OutputSource}
    */
   public void jumpToMark() {
-    if (this.dead)
+    if (this.dead) {
       return;
+    }
     try {
       reset();
       skip(this.markPosition);
@@ -180,8 +176,9 @@ public class OutputSource {
    * OutputSource}
    */
   public void jumpToStart() {
-    if (this.dead)
+    if (this.dead) {
       return;
+    }
     try {
       reset();
       updateDone();
@@ -195,8 +192,9 @@ public class OutputSource {
    * dead flag.
    */
   public void close() {
-    if (this.dead)
+    if (this.dead) {
       return;
+    }
     try {
       this.stream.close();
       die(new IOException("Stream closed"));
@@ -237,8 +235,9 @@ public class OutputSource {
    * {@code -1} If this {@code OutputSource} has went or is dead
    */
   public int getAvailable() {
-    if (this.dead)
+    if (this.dead) {
       return -1;
+    }
     try {
       return this.stream.available();
     } catch (IOException e) {
@@ -252,8 +251,9 @@ public class OutputSource {
    * this {@code OutputSource} to its current position in bytes
    */
   public int getPosition() {
-    if (this.dead)
+    if (this.dead) {
       return -1;
+    }
     try {
       return this.streamSize - this.stream.available();
     } catch (IOException e) {
@@ -264,8 +264,10 @@ public class OutputSource {
 
   /** Returns the length of this {@code OutputSource} in seconds */
   public double getDurationSecond() {
-    return (double) this.streamSize / (this.format.getFrameSize() * this.format
-        .getFrameRate());
+    return (
+      (double) this.streamSize /
+      (this.format.getFrameSize() * this.format.getFrameRate())
+    );
   }
 
   /** Returns the elapsed time for this {@code OutputSource} in seconds */
@@ -274,11 +276,14 @@ public class OutputSource {
   }
 
   public double getElapsedSecond(int plus) {
-    if (this.dead)
+    if (this.dead) {
       return 0;
+    }
     try {
-      return (double) (this.streamSize - this.stream.available() - plus)
-          / (this.format.getFrameSize() * this.format.getFrameRate());
+      return (
+        (double) (this.streamSize - this.stream.available() - plus) /
+        (this.format.getFrameSize() * this.format.getFrameRate())
+      );
     } catch (IOException e) {
       die(e);
       return 0;
@@ -291,11 +296,15 @@ public class OutputSource {
   }
 
   public double getElapsedPercent(int plus) {
-    if (this.dead)
+    if (this.dead) {
       return 0;
+    }
     try {
-      return Math.max(0, (double) (this.streamSize - this.stream.available()
-          - plus) / this.streamSize);
+      return Math.max(
+        0,
+        (double) (this.streamSize - this.stream.available() - plus) /
+        this.streamSize
+      );
     } catch (IOException e) {
       die(e);
       return 0;
@@ -371,17 +380,15 @@ public class OutputSource {
    */
   private int readSeamlessly(byte[] buffer) throws IOException {
     int readSize = 0;
-
     if (this.stream.available() == 0) {
       reset();
       skipSeamlessly(this.markPosition);
     }
     while (true) {
-      readSize += this.stream.read(
-          buffer, readSize, buffer.length - readSize
-      );
-      if (readSize >= buffer.length)
+      readSize += this.stream.read(buffer, readSize, buffer.length - readSize);
+      if (readSize >= buffer.length) {
         break;
+      }
       reset();
       skipSeamlessly(this.markPosition);
     }
@@ -392,8 +399,9 @@ public class OutputSource {
    * Fills the rest of the given byte[] with zeros starting from bytes[index]
    */
   private void zero(byte[] bytes, int index) {
-    while (index < bytes.length)
+    while (index < bytes.length) {
       bytes[index++] = 0;
+    }
   }
 
   /**
@@ -404,7 +412,6 @@ public class OutputSource {
   private void skipSeamlessly(long amount) throws IOException {
     while (amount > 0) {
       amount -= this.stream.skip(amount);
-
       if (this.stream.available() == 0) {
         reset();
         amount += this.markPosition;
@@ -428,11 +435,8 @@ public class OutputSource {
   }
 
   private void reset() throws IOException {
-    try (InputStream nul = this.stream) {
-      try {
-        this.stream = AudioSystem.getAudioInputStream(this.file);
-      } catch (UnsupportedAudioFileException e) {
-      }
-    }
+    try {
+      this.stream = AudioSystem.getAudioInputStream(this.file);
+    } catch (UnsupportedAudioFileException e) {}
   }
 }

@@ -17,21 +17,16 @@ public class AudioManipulator {
     0x000000FF,
     0x0000FFFF,
     0x00FFFFFF,
-    0xFFFFFFFF
+    0xFFFFFFFF,
   };
-
   /** Maximum sample value */
   private long maxValue;
-
   /** Minimum sample value */
   private long minValue;
-
   /** Size of a sample in bytes */
   private byte bytes;
-
   /** Size of a sample in bits */
   private byte bits;
-
   /** Indicates whether the endianness of output byte[]s is big */
   private boolean bigEndian;
 
@@ -60,12 +55,14 @@ public class AudioManipulator {
    * down to the nearest valid value.
    */
   public AudioManipulator(byte bitDepth, boolean bigEndian) {
-    if (bitDepth % 8 != 0)
+    if (bitDepth % 8 != 0) {
       bitDepth = (byte) (bitDepth - bitDepth % 8);
-    if (bitDepth < 8)
+    }
+    if (bitDepth < 8) {
       bitDepth = 8;
-    else if (bitDepth > 32)
+    } else if (bitDepth > 32) {
       bitDepth = 32;
+    }
     this.maxValue = (long) (Math.pow(2, bitDepth - 1) - 1);
     this.minValue = (long) (Math.pow(2, bitDepth - 1) * -1);
     this.bytes = (byte) (bitDepth / 8);
@@ -90,12 +87,16 @@ public class AudioManipulator {
   public int bytesToInt(byte[] bytes, int index, boolean bigEndian) {
     // ack: https://stackoverflow.com/a/18219399
     int out = 0;
-
-    for (int i = 0; i < this.bytes; i++)
-      out |= !bigEndian ? (bytes[index + i] & 0xFF) << (8 * i) : (bytes[index
-          + this.bytes - 1 - i] & 0xFF) << (8 * i);
-    if ((!bigEndian && bytes[index + this.bytes - 1] < 0) || (bigEndian
-        && bytes[index] < 0)) {
+    for (int i = 0; i < this.bytes; i++) {
+      out |=
+        !bigEndian
+          ? (bytes[index + i] & 0xFF) << (8 * i)
+          : (bytes[index + this.bytes - 1 - i] & 0xFF) << (8 * i);
+    }
+    if (
+      (!bigEndian && bytes[index + this.bytes - 1] < 0) ||
+      (bigEndian && bytes[index] < 0)
+    ) {
       out = ~out + 1;
       out &= BIT_MASK[this.bytes];
       out = ~out + 1;
@@ -116,10 +117,12 @@ public class AudioManipulator {
 
   /** Clips the given sample within the value bounds */
   public int clip(long sample) {
-    if (sample > this.maxValue)
+    if (sample > this.maxValue) {
       return (int) this.maxValue;
-    if (sample < this.minValue)
+    }
+    if (sample < this.minValue) {
       return (int) this.minValue;
+    }
     return (int) sample;
   }
 
@@ -129,11 +132,13 @@ public class AudioManipulator {
    */
   public void intToBytes(byte[] bytes, int value, int index) {
     // ack: https://stackoverflow.com/a/2183259
-    for (int i = 0; i < this.bytes; i++)
-      if (this.bigEndian)
+    for (int i = 0; i < this.bytes; i++) {
+      if (this.bigEndian) {
         bytes[index + this.bytes - 1 - i] = (byte) (value >> (8 * i));
-      else
+      } else {
         bytes[index + i] = (byte) (value >> (8 * i));
+      }
+    }
   }
 
   /**
@@ -141,8 +146,9 @@ public class AudioManipulator {
    * {@code Arrays.fill(bytes, (byte) 0)}.
    */
   public void zero(byte[] bytes) {
-    for (int i = 0; i < bytes.length; i++)
+    for (int i = 0; i < bytes.length; i++) {
       bytes[i] = 0;
+    }
   }
 
   /**

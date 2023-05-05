@@ -1,7 +1,6 @@
 package eden.common.video.render;
 
 import eden.common.io.active.ReadAheadLens;
-
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
@@ -20,13 +19,10 @@ public class ImageRenderer extends EDENRenderer {
 
   /** Default rendering aspect ratio */
   public static final double DEFAULT_RATIO = 1;
-
   /** Working ReadAheadLens */
   private ReadAheadLens<Image> lens;
-
   /** Current Image to be painted */
   private Image image;
-
   /** Rendering aspect ratio */
   private double ratio;
 
@@ -62,10 +58,12 @@ public class ImageRenderer extends EDENRenderer {
   /**
    * Makes an {@code ImageRenderer} with the given parameters
    */
-  public ImageRenderer(String name,
-      ReadAheadLens<Image> lens,
-      double ratio,
-      RendererComponent... components) {
+  public ImageRenderer(
+    String name,
+    ReadAheadLens<Image> lens,
+    double ratio,
+    RendererComponent... components
+  ) {
     super(name, components);
     this.lens = lens;
     this.image = lens.poll();
@@ -79,9 +77,9 @@ public class ImageRenderer extends EDENRenderer {
   @Override
   public void update(RendererComponent component, ActionEvent event) {
     Image image = this.lens.poll();
-
-    if (image != null)
+    if (image != null) {
       this.image = image;
+    }
   }
 
   /**
@@ -90,12 +88,12 @@ public class ImageRenderer extends EDENRenderer {
    */
   @Override
   public void draw(RendererComponent component, Graphics2D g) {
-    if (this.image == null)
+    if (this.image == null) {
       return;
+    }
     long time = System.currentTimeMillis();
     int width;
     int height;
-
     if (component.getHeight() * this.ratio >= component.getWidth()) {
       width = component.getWidth();
       height = (int) Math.round(width / this.ratio);
@@ -104,24 +102,24 @@ public class ImageRenderer extends EDENRenderer {
       width = (int) Math.round(height * this.ratio);
     }
     g.setRenderingHint(
-        RenderingHints.KEY_RENDERING,
-        RenderingHints.VALUE_RENDER_SPEED
+      RenderingHints.KEY_RENDERING,
+      RenderingHints.VALUE_RENDER_SPEED
     );
-    g.drawImage(this.image,
-        (int) Math.round(((double) component.getWidth() / 2) - ((double) width
-            / 2)
-        ),
-        (int) Math.round(((double) component.getHeight() / 2) - ((double) height
-            / 2)
-        ),
-        width, height, null
+    g.drawImage(
+      this.image,
+      (int) Math.round(
+        ((double) component.getWidth() / 2) - ((double) width / 2)
+      ),
+      (int) Math.round(
+        ((double) component.getHeight() / 2) - ((double) height / 2)
+      ),
+      width,
+      height,
+      null
     );
     if (this.drawStatistics) {
       g.setFont(FONT);
-
-      drawStatistics(
-          component, g, width, height, time - this.time
-      );
+      drawStatistics(component, g, width, height, time - this.time);
     }
     this.time = time;
   }
@@ -143,8 +141,9 @@ public class ImageRenderer extends EDENRenderer {
    * ImageRenderer} and returns the previously assigned value
    */
   public ReadAheadLens<Image> setLens(ReadAheadLens<Image> lens) {
-    if (lens == null)
+    if (lens == null) {
       return null;
+    }
     ReadAheadLens<Image> out = this.lens;
     this.lens = lens;
     return out;
@@ -164,17 +163,29 @@ public class ImageRenderer extends EDENRenderer {
   }
 
   /** Draws rendering statistics with the given parameters */
-  private void drawStatistics(RendererComponent component,
-      Graphics2D g,
-      int width,
-      int height,
-      long time) {
+  private void drawStatistics(
+    RendererComponent component,
+    Graphics2D g,
+    int width,
+    int height,
+    long time
+  ) {
     g.drawString(
-        "Space: " + component.getWidth() + "×" + component.getHeight()
-        + "  Output: " + width + "×" + height + "  Source: " + this.image
-            .getWidth(null) + "×" + this.image.getHeight(null),
-        1, 13);
-
+      "Space: " +
+      component.getWidth() +
+      "×" +
+      component.getHeight() +
+      "  Output: " +
+      width +
+      "×" +
+      height +
+      "  Source: " +
+      this.image.getWidth(null) +
+      "×" +
+      this.image.getHeight(null),
+      1,
+      13
+    );
     g.drawString("Delta: " + time + " ms", 1, 28);
   }
 }

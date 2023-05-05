@@ -13,10 +13,8 @@ public class ChannelDSPData {
 
   /** Default amplification factor with which a sample is to be multiplied */
   public static final float DEFAULT_AMPLIFICATION = 1;
-
   /** Amplification factor with which a sample is to be multiplied */
   private float amplification;
-
   /** Indicates whether the defined channel(s) is/are muted */
   private boolean muted;
 
@@ -91,23 +89,26 @@ public class ChannelDSPData {
   /** {@inheritDoc} */
   @Override
   public boolean equals(Object o) {
-    return o == this || (o != null && o.getClass() == getClass() && equals(
-        (ChannelDSPData) o));
+    return (
+      o == this ||
+      (o != null && o.getClass() == getClass() && equals((ChannelDSPData) o))
+    );
   }
 
   /** {@inheritDoc} */
   @Override
   public int hashCode() {
-    return Objects.hash(
-        amplification, muted
-    );
+    return Objects.hash(amplification, muted);
   }
 
   /**
    * Returns whether the given {@code ChannelDSPData} is equivalent to this
    */
   public boolean equals(ChannelDSPData d) {
-    return d != null && this.amplification == d.amplification && this.muted
-        == d.muted;
+    return (
+      d != null &&
+      this.amplification == d.amplification &&
+      this.muted == d.muted
+    );
   }
 }

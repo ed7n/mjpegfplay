@@ -2,7 +2,6 @@ package eden.common.video.render;
 
 import eden.common.io.active.FileFrameLens;
 import eden.common.video.EDENFrame;
-
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
@@ -22,19 +21,14 @@ public class MultiLensFrameRenderer extends EDENRenderer {
 
   /** Working FileFrameLenses */
   private final List<FileFrameLens> lenses;
-
   /** FileFrameLens from which the next Frame will be polled */
   private FileFrameLens lens;
-
   /** Current Frame to be painted */
   private EDENFrame frame;
-
   /** Rendering aspect ratio */
   private double ratio;
-
   /** Identifier of the last rendered Frame */
   private int lastIdentifier;
-
   private boolean reverse = false;
 
   /**
@@ -58,9 +52,11 @@ public class MultiLensFrameRenderer extends EDENRenderer {
    *
    * @param ratio Rendering aspect ratio
    */
-  public MultiLensFrameRenderer(String name,
-      List<FileFrameLens> lenses,
-      double ratio) {
+  public MultiLensFrameRenderer(
+    String name,
+    List<FileFrameLens> lenses,
+    double ratio
+  ) {
     this(name, lenses, ratio, new RendererComponent[0]);
   }
 
@@ -69,10 +65,12 @@ public class MultiLensFrameRenderer extends EDENRenderer {
    *
    * @param ratio Rendering aspect ratio
    */
-  public MultiLensFrameRenderer(String name,
-      List<FileFrameLens> lenses,
-      double ratio,
-      RendererComponent... components) {
+  public MultiLensFrameRenderer(
+    String name,
+    List<FileFrameLens> lenses,
+    double ratio,
+    RendererComponent... components
+  ) {
     super(name, components);
     lenses.removeAll(Collections.singleton(null));
     this.lenses = Collections.unmodifiableList(lenses);
@@ -92,13 +90,14 @@ public class MultiLensFrameRenderer extends EDENRenderer {
    */
   @Override
   public void update(RendererComponent component, ActionEvent event) {
-    if (!setNextLens())
+    if (!setNextLens()) {
       return;
+    }
     EDENFrame frame = this.lens.poll();
-
     if (frame != null) {
-      if (this.frame != null)
+      if (this.frame != null) {
         this.lastIdentifier = this.frame.getIdentifier();
+      }
       synchronized (this) {
         this.frame = frame;
       }
@@ -111,12 +110,12 @@ public class MultiLensFrameRenderer extends EDENRenderer {
    */
   @Override
   public void draw(RendererComponent component, Graphics2D g) {
-    if (this.frame == null)
+    if (this.frame == null) {
       return;
+    }
     long time = System.currentTimeMillis();
     int width;
     int height;
-
     if (component.getHeight() * this.ratio >= component.getWidth()) {
       width = component.getWidth();
       height = (int) Math.round(width / this.ratio);
@@ -125,24 +124,24 @@ public class MultiLensFrameRenderer extends EDENRenderer {
       width = (int) Math.round(height * this.ratio);
     }
     g.setRenderingHint(
-        RenderingHints.KEY_RENDERING,
-        RenderingHints.VALUE_RENDER_SPEED
+      RenderingHints.KEY_RENDERING,
+      RenderingHints.VALUE_RENDER_SPEED
     );
-    g.drawImage(this.frame.getImage(),
-        (int) Math.round(((double) component.getWidth() / 2) - ((double) width
-            / 2)
-        ),
-        (int) Math.round(((double) component.getHeight() / 2) - ((double) height
-            / 2)
-        ),
-        width, height, null
+    g.drawImage(
+      this.frame.getImage(),
+      (int) Math.round(
+        ((double) component.getWidth() / 2) - ((double) width / 2)
+      ),
+      (int) Math.round(
+        ((double) component.getHeight() / 2) - ((double) height / 2)
+      ),
+      width,
+      height,
+      null
     );
     if (this.drawStatistics) {
       g.setFont(FONT);
-
-      drawStatistics(
-          component, g, width, height, time - this.time
-      );
+      drawStatistics(component, g, width, height, time - this.time);
     }
     this.time = time;
   }
@@ -191,25 +190,25 @@ public class MultiLensFrameRenderer extends EDENRenderer {
    * next update
    */
   private boolean setNextLens() {
-    if (this.lenses.size() == 1)
+    if (this.lenses.size() == 1) {
       return true;
-    int initialId = this.reverse ? Integer.MIN_VALUE : Integer.MAX_VALUE,
-        nearestId = initialId;
-
+    }
+    int initialId = this.reverse
+      ? Integer.MIN_VALUE
+      : Integer.MAX_VALUE, nearestId = initialId;
     for (FileFrameLens l : this.lenses) {
       int id = l.getNextIdentifier();
-
-//    if ((this.frame == null
-//        || reverse && id < this.frame.getIdentifier()
-//        || (!reverse && id > this.frame.getIdentifier()))
-//        && (reverse && id > nearestId
-//        || (!reverse && id < nearestId))) {
-//      nearestId = id;
-//      this.lens = l;
-//    } else if (this.frame != null
-//        && (reverse && id >= this.frame.getIdentifier()
-//        || (!reverse && id <= this.frame.getIdentifier())))
-//      l.discard();
+      //    if ((this.frame == null
+      //        || reverse && id < this.frame.getIdentifier()
+      //        || (!reverse && id > this.frame.getIdentifier()))
+      //        && (reverse && id > nearestId
+      //        || (!reverse && id < nearestId))) {
+      //      nearestId = id;
+      //      this.lens = l;
+      //    } else if (this.frame != null
+      //        && (reverse && id >= this.frame.getIdentifier()
+      //        || (!reverse && id <= this.frame.getIdentifier())))
+      //      l.discard();
       if (reverse && id > nearestId || (!reverse && id < nearestId)) {
         nearestId = id;
         this.lens = l;
@@ -219,26 +218,50 @@ public class MultiLensFrameRenderer extends EDENRenderer {
   }
 
   /** Draws rendering statistics with the given parameters */
-  private void drawStatistics(RendererComponent component,
-      Graphics2D g,
-      int width,
-      int height,
-      long time) {
+  private void drawStatistics(
+    RendererComponent component,
+    Graphics2D g,
+    int width,
+    int height,
+    long time
+  ) {
     g.drawString(
-        "Space: " + component.getWidth() + "×" + component.getHeight()
-        + "  Output: " + width + "×" + height + "  Source: " + this.frame
-            .getImage().getWidth(null) + "×" + this.frame.getImage().getHeight(
-        null),
-        1, 13);
-
+      "Space: " +
+      component.getWidth() +
+      "×" +
+      component.getHeight() +
+      "  Output: " +
+      width +
+      "×" +
+      height +
+      "  Source: " +
+      this.frame.getImage().getWidth(null) +
+      "×" +
+      this.frame.getImage().getHeight(null),
+      1,
+      13
+    );
     g.drawString(
-        "Delta: " + (this.frame.getIdentifier() - this.lastIdentifier)
-        + "  Time: " + time + " ms", 1, 28);
-
+      "Delta: " +
+      (this.frame.getIdentifier() - this.lastIdentifier) +
+      "  Time: " +
+      time +
+      " ms",
+      1,
+      28
+    );
     g.drawString(
-        "Lens : " + this.lenses.indexOf(this.lens) + "/" + this.lenses.size()
-        + "  Fill: " + this.lens.getUsed() + "/" + this.lens.getCapacity(),
-        1, 43);
+      "Lens : " +
+      this.lenses.indexOf(this.lens) +
+      "/" +
+      this.lenses.size() +
+      "  Fill: " +
+      this.lens.getUsed() +
+      "/" +
+      this.lens.getCapacity(),
+      1,
+      43
+    );
     g.drawString("Frame: " + this.frame.getIdentifier(), 1, 58);
   }
 }

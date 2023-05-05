@@ -13,7 +13,6 @@ import java.util.NoSuchElementException;
  * @version u0r5, 11/05/2018.
  */
 public interface MappedFileReader extends FileWorker {
-
   /**
    * Reads data from a file at a given key
    *
@@ -30,11 +29,8 @@ public interface MappedFileReader extends FileWorker {
    * @throws EOFException If the end of file is reached unexpectedly while
    * reading a value
    */
-  String read(String key) throws
-      IllegalArgumentException,
-      IOException,
-      NoSuchElementException;
-
+  String read(String key)
+    throws IllegalArgumentException, IOException, NoSuchElementException;
   /**
    * Reads all data from a file to a {@code Map}
    *

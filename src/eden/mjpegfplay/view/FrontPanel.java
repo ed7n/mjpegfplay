@@ -1,13 +1,14 @@
 package eden.mjpegfplay.view;
 
+import static eden.common.shared.Constants.NUL_STRING;
+import static eden.mjpegfplay.model.TransportConstants.*;
+import static eden.mjpegfplay.view.FrontPanelConstants.*;
+
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.JComponent;
-
-import static eden.mjpegfplay.model.TransportConstants.*;
-import static eden.mjpegfplay.view.FrontPanelConstants.*;
 
 /**
  * @author Brendon
@@ -19,40 +20,28 @@ class FrontPanel extends JComponent implements FrontPanelInterface {
 
   /** StringBuilder with which display Strings are to be made */
   private final StringBuilder stringBuilder = new StringBuilder(TEXT_LENGTH);
-
   /** Number of pending paint calls */
   private final AtomicInteger calls = new AtomicInteger(0);
-
   /** Top row text */
-  private String text0 = "";
-
+  private String text0 = NUL_STRING;
   /** Bottom row text */
-  private String text1 = "";
-
+  private String text1 = NUL_STRING;
   /** WAIT indicator pin */
   private Boolean wait = false;
-
   /** GUI indicator pin */
   private Boolean gui = false;
-
   /** PAUSE indicator pin */
   private Boolean pause = false;
-
   /** SCAN indicator pin */
   private Boolean scan = false;
-
   /** OSD indicator pin */
   private Boolean osd = false;
-
   /** FLOAT indicator pin */
   private Boolean floating = false;
-
   /** LOOP indicator pin */
   private Boolean loop = false;
-
   /** HS indicator pin */
   private Boolean highSpeed = false;
-
   /** REV indicator pin */
   private Boolean mute = false;
 
@@ -71,10 +60,9 @@ class FrontPanel extends JComponent implements FrontPanelInterface {
     Graphics2D g2 = (Graphics2D) g.create();
     drawDecorations(g2);
     drawTexts(g2);
-
     g2.setRenderingHint(
-        RenderingHints.KEY_TEXT_ANTIALIASING,
-        RenderingHints.VALUE_TEXT_ANTIALIAS_ON
+      RenderingHints.KEY_TEXT_ANTIALIASING,
+      RenderingHints.VALUE_TEXT_ANTIALIAS_ON
     );
     drawIndicators(g2);
   }
@@ -90,17 +78,18 @@ class FrontPanel extends JComponent implements FrontPanelInterface {
           return;
         }
       }
-      do
+      do {
         repaint();
-      while (this.calls.decrementAndGet() > 0);
+      } while (this.calls.decrementAndGet() > 0);
     }
   }
 
   /** {@inheritDoc} */
   @Override
   public synchronized void call() {
-    if (this.calls.compareAndSet(MAXIMUM_CALLS, MAXIMUM_CALLS))
+    if (this.calls.compareAndSet(MAXIMUM_CALLS, MAXIMUM_CALLS)) {
       return;
+    }
     this.calls.incrementAndGet();
     notifyAll();
   }
@@ -126,15 +115,17 @@ class FrontPanel extends JComponent implements FrontPanelInterface {
   /** {@inheritDoc} */
   @Override
   public void setText0(String text0) {
-    if (text0 != null)
+    if (text0 != null) {
       this.text0 = text0;
+    }
   }
 
   /** {@inheritDoc} */
   @Override
   public void setText1(String text1) {
-    if (text1 != null)
+    if (text1 != null) {
       this.text1 = text1;
+    }
   }
 
   /** {@inheritDoc} */
@@ -201,21 +192,23 @@ class FrontPanel extends JComponent implements FrontPanelInterface {
   /** {@inheritDoc} */
   @Override
   public void clearTexts() {
-    this.text0 = "";
-    this.text1 = "";
+    this.text0 = NUL_STRING;
+    this.text1 = NUL_STRING;
   }
 
   /** {@inheritDoc} */
   @Override
-  public void setIndicators(int wait,
-      int gui,
-      int pause,
-      int scan,
-      int osd,
-      int floating,
-      int loop,
-      int highSpeed,
-      int reverse) {
+  public void setIndicators(
+    int wait,
+    int gui,
+    int pause,
+    int scan,
+    int osd,
+    int floating,
+    int loop,
+    int highSpeed,
+    int reverse
+  ) {
     setPin(this.wait, wait);
     setPin(this.gui, gui);
     setPin(this.pause, pause);
@@ -341,10 +334,11 @@ class FrontPanel extends JComponent implements FrontPanelInterface {
   }
 
   private void setPin(Boolean pin, int input) {
-    if (input == 1)
+    if (input == 1) {
       pin = true;
-    else if (input == 0)
+    } else if (input == 0) {
       pin = false;
+    }
   }
 
   private void drawDecorations(Graphics2D g) {
@@ -385,23 +379,21 @@ class FrontPanel extends JComponent implements FrontPanelInterface {
   private String formatToPanel(String string, boolean leanRight) {
     string = string.toUpperCase();
     this.stringBuilder.setLength(0);
-
     if (string.length() > TEXT_LENGTH) {
-      this.stringBuilder.append(string.substring(0, TEXT_LENGTH));
-      return this.stringBuilder.toString();
+      return this.stringBuilder.append(string.substring(0, TEXT_LENGTH))
+        .toString();
     }
-    byte spacesLeft = leanRight ? (byte) Math.ceil((double) (TEXT_LENGTH
-        - string.length()) / 2) : (byte) Math.floor((double) (TEXT_LENGTH
-        - string.length()) / 2);
-
+    byte spacesLeft = leanRight
+      ? (byte) Math.ceil((double) (TEXT_LENGTH - string.length()) / 2)
+      : (byte) Math.floor((double) (TEXT_LENGTH - string.length()) / 2);
     byte spacesRght = (byte) (TEXT_LENGTH - string.length() - spacesLeft);
-
-    while (spacesLeft-- > 0)
+    while (spacesLeft-- > 0) {
       this.stringBuilder.append(' ');
+    }
     this.stringBuilder.append(string);
-
-    while (spacesRght-- > 0)
+    while (spacesRght-- > 0) {
       this.stringBuilder.append(' ');
+    }
     return this.stringBuilder.toString();
   }
 }

@@ -2,7 +2,6 @@ package eden.common.io.active;
 
 import eden.common.model.sequence.FileFrameSequence;
 import eden.common.video.EDENFrame;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -22,28 +21,22 @@ public class FileFrameLens extends ReadAheadLens<EDENFrame> {
 
   /** Path to working directory */
   private final String path;
-
   /** Working FileFrameSequence */
   private final FileFrameSequence sequence;
-
   /** Frame number offset multiplier */
   private final byte offsetFrame;
-
   /** Frame skip multiplier */
   private final byte offsetSkip;
-
   /**
    * Indicates whether this FileFrameLens is signalled for a change in behavior
    */
   private AtomicBoolean call;
-
   /**
    * This is a buffering parameter that is to be obtained from the working
    * Sequence on call from outsider Threads, and then assigned onto the
    * buffering Thread's local copy on its next cycle.
    */
   private int frame;
-
   /**
    * This is a buffering parameter that is to be obtained from the working
    * Sequence on call from outsider Threads, and then assigned onto the
@@ -63,26 +56,32 @@ public class FileFrameLens extends ReadAheadLens<EDENFrame> {
    * Makes a {@code FileFrameLens} with the given path, {@code
    * FileFrameSequence}, and buffer capacity in number of {@code Frames}.
    */
-  public FileFrameLens(String path,
-      FileFrameSequence sequence,
-      short capacity) {
+  public FileFrameLens(
+    String path,
+    FileFrameSequence sequence,
+    short capacity
+  ) {
     this(path, sequence, capacity, (byte) 0, (byte) 0);
   }
 
   /** Makes a {@code FileFrameLens} with the given parameters */
-  public FileFrameLens(String path,
-      FileFrameSequence sequence,
-      byte offsetFrame,
-      byte offsetSkip) {
+  public FileFrameLens(
+    String path,
+    FileFrameSequence sequence,
+    byte offsetFrame,
+    byte offsetSkip
+  ) {
     this(path, sequence, DEFAULT_CAPACITY, offsetFrame, offsetSkip);
   }
 
   /** Makes a {@code FileFrameLens} with the given parameters */
-  public FileFrameLens(String path,
-      FileFrameSequence sequence,
-      short capacity,
-      byte offsetFrame,
-      byte offsetSkip) {
+  public FileFrameLens(
+    String path,
+    FileFrameSequence sequence,
+    short capacity,
+    byte offsetFrame,
+    byte offsetSkip
+  ) {
     super(capacity);
     this.path = path;
     this.sequence = sequence;
@@ -93,22 +92,24 @@ public class FileFrameLens extends ReadAheadLens<EDENFrame> {
   }
 
   /** Runs this {@code FileFrameLens} */
+  @Override
   public void run() {
-    if (this.dead.get())
+    if (this.dead.get()) {
       return;
+    }
     try {
       while (!Thread.currentThread().isInterrupted()) {
         int skip = this.skip;
         int frame = this.frame;
-
         while (!Thread.currentThread().isInterrupted() && !this.dead.get()) {
           if (this.call.compareAndSet(true, false)) {
             clear();
             break;
           }
-          if ((this.buffer.size() >= this.capacity) || !this.sequence
-              .isValidPoint(frame))
-            try {
+          if (
+            (this.buffer.size() >= this.capacity) ||
+            !this.sequence.isValidPoint(frame)
+          ) try {
             synchronized (this) {
               wait();
             }
@@ -120,9 +121,16 @@ public class FileFrameLens extends ReadAheadLens<EDENFrame> {
             break;
           }
           try {
-            add(new EDENFrame(ImageIO.read(new File(
-                this.path + frame + "." + this.sequence.getExtension()
-            )), frame));
+            add(
+              new EDENFrame(
+                ImageIO.read(
+                  new File(
+                    this.path + frame + "." + this.sequence.getExtension()
+                  )
+                ),
+                frame
+              )
+            );
           } catch (IIOException e) {
             add(null);
           }
@@ -138,7 +146,6 @@ public class FileFrameLens extends ReadAheadLens<EDENFrame> {
   public void call() {
     updateBufferingParameters();
     this.call.set(true);
-
     synchronized (this) {
       notifyAll();
     }
@@ -147,10 +154,10 @@ public class FileFrameLens extends ReadAheadLens<EDENFrame> {
   /** Awaits this {@code FileFrameLens} for a change in behavior */
   public synchronized void await() {
     try {
-      while (this.call.get() || this.buffer.isEmpty())
+      while (this.call.get() || this.buffer.isEmpty()) {
         wait();
-    } catch (InterruptedException e) {
-    }
+      }
+    } catch (InterruptedException e) {}
   }
 
   /**
@@ -161,15 +168,16 @@ public class FileFrameLens extends ReadAheadLens<EDENFrame> {
    */
   public int getNextIdentifier() {
     EDENFrame frame;
-
     synchronized (this) {
       frame = this.buffer.peek();
     }
-    if (frame == null)
+    if (frame == null) {
       return this.sequence.getSkip() >= 0
-          ? Integer.MAX_VALUE : Integer.MIN_VALUE;
-    else
+        ? Integer.MAX_VALUE
+        : Integer.MIN_VALUE;
+    } else {
       return frame.getIdentifier();
+    }
   }
 
   /**
@@ -177,9 +185,8 @@ public class FileFrameLens extends ReadAheadLens<EDENFrame> {
    * FileFrameLens
    */
   private void updateBufferingParameters() {
-    this.frame = this.sequence.getPoint() + (this.sequence.getSkip()
-        * this.offsetFrame);
-
+    this.frame =
+      this.sequence.getPoint() + (this.sequence.getSkip() * this.offsetFrame);
     this.skip = this.sequence.getSkip() * (1 + this.offsetSkip);
   }
 }

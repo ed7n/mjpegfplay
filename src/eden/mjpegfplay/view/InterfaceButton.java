@@ -1,15 +1,15 @@
 package eden.mjpegfplay.view;
 
+import static eden.mjpegfplay.view.UIConstants.*;
+
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 
-import static eden.mjpegfplay.view.UIConstants.*;
-
 /**
  * A InterfaceButton is a GUI element on which the user can tap to control
  * sequence playback.
- * <p>
+ *
  * This class is a convenient JButton factory for transport buttons.
  *
  * @author Brendon
@@ -26,10 +26,12 @@ class InterfaceButton extends JButton {
   }
 
   /** Makes a InterfaceButton with the given parameters */
-  InterfaceButton(String label,
-      String actionCommand,
-      ActionListener listener,
-      String tooltip) {
+  InterfaceButton(
+    String label,
+    String actionCommand,
+    ActionListener listener,
+    String tooltip
+  ) {
     super(label);
     addActionListener(listener);
     setActionCommand(actionCommand);

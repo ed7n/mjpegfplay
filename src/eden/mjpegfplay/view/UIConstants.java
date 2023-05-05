@@ -1,7 +1,6 @@
 package eden.mjpegfplay.view;
 
 import eden.common.video.CSSColor;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -22,31 +21,22 @@ class UIConstants {
 
   /** Minimum application main Frame size in pixels */
   static final Dimension SIZE_FRAME = new Dimension(640, 640);
-
   /** Minimum interface size in pixels */
   static final Dimension SIZE_INTERFACE = new Dimension(640, 160);
-
   /** Preferred render size in pixels */
   static final Dimension SIZE_RENDER = new Dimension(640, 480);
-
   /** Application Menu background Color */
   static final Color COLOR_MENU = new Color(31, 31, 31);
-
   /** Interface Panel background Color */
   static final Color COLOR_INTERFACE = new Color(15, 15, 15);
-
   /** Application Menu Font */
   static final Font FONT_MENU;
-
   /** Dialog Font */
   static final Font FONT_DIALOG;
-
   /** Label Font */
   static final Font FONT_LABEL;
-
   /** Button Font */
   static final Font FONT_BUTTON;
-
   /** TextField Font */
   static final Font FONT_TEXT_FIELD;
 
@@ -75,28 +65,20 @@ class UIConstants {
 
   /** Button Border */
   static final Border BUTTON_BORDER = LineBorder.createBlackLineBorder();
-
   /** Interface Panel horizontal padding in pixels */
   static final int PADDING_HORIZONTAL = 8;
-
   /** Interface Panel vertical padding in pixels */
   static final int PADDING_VERTICAL = 8;
-
   /** Button width in pixels */
   static final int BUTTON_WIDTH = 48;
-
   /** Button height in pixels */
   static final int BUTTON_HEIGHT = 32;
-
   /** Slider width in pixels */
   static final int SLIDER_WIDTH = BUTTON_WIDTH * 3;
-
   /** Spinner width in pixels */
   static final int SPINNER_WIDTH = BUTTON_WIDTH;
-
   /** Status display panel width in pixels */
   static final int PANEL_WIDTH = 256;
-
   /** Status display panel height in pixels */
   static final int PANEL_HEIGHT = 84;
 }

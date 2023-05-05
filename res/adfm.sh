@@ -1,56 +1,45 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-echo
-echo
+{
+  declare -p ews || declare -A ews=([base]="${0%/*}" [exec]="${0}" \
+      [name]='Adjacent Duplicate File Mover' \
+      [sign]='u0r1 by Brendon, 05/05/2023.')
+} &> /dev/null
 
-end() {
-    echo
-    echo
-    echo "--------------"
-    echo "End of adfm.sh"
+# Output directory.
+readonly ADM_OUT="${0%.*}"'-out'
+
+ADM.die() {
+  (( ${#} )) && echo "${@}" 1>&2
+  exit 1
 }
 
-echo "Adjacent Duplicate File Mover (adfm.sh)"
-echo "---------------------------------------"
-echo "u0r0 by Brendon, 01/19/2019."
-echo
-echo
-
-if [[ -e adfm.tmp ]]; then
-    read -n 1 -p "<adfm/?> [y] to delete existing adfm.tmp, quit otherwise. " in
-    echo
-
-    if [[ "$in" != "y" ]]; then
-        echo "<adfm/i> Sorry, but adfm.tmp is required proceed."
-        end
-        exit 2
-    fi
-    rm adfm.tmp
-fi
-read -p "<adfm/?> Input starting file number: " file
-read -p "<adfm/?> Input ending file number: " end
-read -p "<adfm/?> Input file extension: " ext
-echo "<adfm/i> Performing adjacent file comparison..."
-
-while (( $file < $end )); do
-    cmp -s $file.$ext $(($file + 1)).$ext
-
-    if [[ $? == 0 ]]; then
-        echo $(($file + 1)) >> adfm.tmp
-    fi
-    ((file++))
+type 'cmp' &> /dev/null || ADM.die '`cmp` not found.'
+type 'mkdir' &> /dev/null || ADM.die '`mkdir` not found.'
+type 'mv' &> /dev/null || ADM.die '`mv` not found.'
+(( ${#} )) || {
+  echo 'Usage: <start> <end> <suffix>'
+  exit
+}
+(( ${#} >= 2 )) || ADM.die 'No end.'
+(( ${#} >= 3 )) || ADM.die 'No suffix.'
+echo -e "${ews[name]}"' '"${ews[sign]}"'\n\nWorking directory:\n  '"$(pwd)"'
+Output directory:\n  '"${ADM_OUT}"
+[ -e "${ADM_OUT}" ] && ADM.die 'Exists.'
+admIdx="${1}"
+echo 'Searching.'
+while (( admIdx < ${2} )); do
+  cmp -s "${admIdx}""${3}" $(( admIdx + 1 ))"${3}" \
+      && admItms+=($(( admSta + 1 ))) && echo '  '$(( admSta + 1 ))"${3}"
+  (( admIdx++ ))
 done
-
-if ! [[ -e adfm.tmp ]]; then
-    echo "<adfm/i> ...done. No duplicates found."
-else
-    mkdir adfm-duplicates > /dev/null 2>&1
-    echo "<adfm/i> ...done. Moving found duplicates..."
-
-    for i in $(cat adfm.tmp); do
-        mv $i.$ext adfm-duplicates > /dev/null 2>&1
+echo 'Found '"${#admItms[*]}"' duplicate(s).'
+(( ${#admItms[*]} )) && {
+  echo 'Now moving.'
+  mkdir -p "${ADM_OUT}" && {
+    for admItm in ${admItms[*]}; do
+      mv -t "${ADM_OUT}" "${admItm}""${3}"
     done
-    rm adfm.tmp
-    echo "<adfm/i> ...done. Check ./adfm-duplicates/"
-fi
-end
+    echo 'Done.'
+  }
+} || echo 'Nothing to move.'

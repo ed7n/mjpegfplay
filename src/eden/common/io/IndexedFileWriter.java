@@ -11,7 +11,6 @@ import java.util.List;
  * @version u0r5, 11/05/2018.
  */
 public interface IndexedFileWriter extends FileWorker {
-
   /**
    * Writes data from the given {@code List} to a file
    *
@@ -21,7 +20,5 @@ public interface IndexedFileWriter extends FileWorker {
    *
    * @throws IOException If a write operation fails or is interrupted
    */
-  void write(List<String> list) throws
-      IllegalArgumentException,
-      IOException;
+  void write(List<String> list) throws IllegalArgumentException, IOException;
 }

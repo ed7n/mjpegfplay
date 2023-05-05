@@ -23,10 +23,8 @@ public class RendererComponent extends JComponent implements ActionListener {
 
   /** Identification */
   protected final String name;
-
   /** Renderers to paint onto this RendererComponent */
   private final Set<EDENRenderer> renderers;
-
   private final Dimension dimension;
 
   /** Makes a {@code RendererComponent} */
@@ -55,7 +53,7 @@ public class RendererComponent extends JComponent implements ActionListener {
 
   /**
    * Have the {@code EDENRenderers} paint onto this {@code RendererComponent}.
-   * <p>
+   *
    * To offer as much flexibility as possible, this does not clear but paints
    * over what is currently painted. To clear previous paints, add a {@code
    * CleaningRenderer} to this {@code RendererComponent} at your preference.
@@ -63,9 +61,7 @@ public class RendererComponent extends JComponent implements ActionListener {
   @Override
   public void paintComponent(Graphics g) {
     Graphics2D g2 = (Graphics2D) g.create();
-
-    for (EDENRenderer r : this.renderers)
-      r.draw(this, g2);
+    this.renderers.forEach(r -> r.draw(this, g2));
   }
 
   @Override
@@ -78,9 +74,9 @@ public class RendererComponent extends JComponent implements ActionListener {
    * Updates all {@code EDENRenderers} in this {@code RendererComponent} and
    * repaints itself
    */
+  @Override
   public void actionPerformed(ActionEvent event) {
-    for (EDENRenderer r : this.renderers)
-      r.update(this, event);
+    this.renderers.forEach(r -> r.update(this, event));
     repaint();
   }
 
@@ -94,8 +90,9 @@ public class RendererComponent extends JComponent implements ActionListener {
 
   /** Adds the given {@code EDENRenderer} to this {@code RendererComponent} */
   public void addRenderer(EDENRenderer renderer) {
-    if (renderer == null)
+    if (renderer == null) {
       return;
+    }
     this.renderers.add(renderer);
   }
 
@@ -121,8 +118,10 @@ public class RendererComponent extends JComponent implements ActionListener {
   /** {@inheritDoc} */
   @Override
   public boolean equals(Object o) {
-    return o == this || (o != null && o.getClass() == getClass() && equals(
-        (RendererComponent) o));
+    return (
+      o == this ||
+      (o != null && o.getClass() == getClass() && equals((RendererComponent) o))
+    );
   }
 
   /** {@inheritDoc} */

@@ -11,14 +11,11 @@ public class SequenceTypes {
 
   /** The original (JPEG) image {@code Sequence} */
   public static final String SEQUENCE = "Sequence";
-
   /** Freezing image {@code Sequence} */
   public static final String FREEZING_SEQUENCE = "Freezing Sequence";
-
   /** Experimental music playlist */
   public static final String MUSIC_SEQUENCE = "Music";
 
   /** To prevent instantiations of this class */
-  private SequenceTypes() {
-  }
+  private SequenceTypes() {}
 }

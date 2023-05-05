@@ -1,13 +1,13 @@
 package eden.mjpegfplay.view;
 
+import static eden.mjpegfplay.view.UIConstants.*;
+
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
-import static eden.mjpegfplay.view.UIConstants.*;
-
 /**
  * A InterfaceLabel provides a non-iconified label to its target button.
- * <p>
+ *
  * This class is a convenient JLabel factory for transport labels.
  *
  * @author Brendon

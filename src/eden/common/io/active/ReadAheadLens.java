@@ -18,16 +18,12 @@ public abstract class ReadAheadLens<T> implements Runnable {
 
   /** Default buffer capacity in number of data chunks */
   public static final short DEFAULT_CAPACITY = 4;
-
   /** FIFO buffer to which data chunks are to be stored */
   protected final Queue<T> buffer;
-
   /** Buffer capacity in number of data chunks */
   protected final short capacity;
-
   /** Exception defining the death of this ReadAheadLens */
   protected Exception deathCause;
-
   /**
    * Indicates whether this ReadAheadLens was unrecoverably thrown an Exception
    */
@@ -53,21 +49,22 @@ public abstract class ReadAheadLens<T> implements Runnable {
   }
 
   /** Runs this {@code ReadAheadLens} */
+  @Override
   public abstract void run();
 
-// Skeleton.
-//  public void run() {
-//    if (this.dead.get())
-//      return;
-//    try {
-//      while (!Thread.currentThread().isInterrupted() && !this.dead.get()) {
-//        getNextDataChunk();
-//        add(dataChunk);
-//      }
-//    } catch (Exception e) {
-//      this.dead.set(true);
-//    }
-//  }
+  // Skeleton.
+  //  public void run() {
+  //    if (this.dead.get())
+  //      return;
+  //    try {
+  //      while (!Thread.currentThread().isInterrupted() && !this.dead.get()) {
+  //        getNextDataChunk();
+  //        add(dataChunk);
+  //      }
+  //    } catch (Exception e) {
+  //      this.dead.set(true);
+  //    }
+  //  }
   /**
    * Removes and returns the head data chunk out of the FIFO buffer of this
    * {@code ReadAheadLens}

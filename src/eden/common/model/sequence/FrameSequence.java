@@ -12,7 +12,6 @@ public class FrameSequence extends Sequence {
 
   /** Projection width in pixels */
   protected final short width;
-
   /** Projection height in pixels */
   protected final short height;
 
@@ -34,13 +33,14 @@ public class FrameSequence extends Sequence {
    * @throws IllegalArgumentException If any of the numerical arguments are
    * malformed
    */
-  public FrameSequence(String name,
-      int start,
-      int end,
-      byte rate,
-      short width,
-      short height)
-      throws IllegalArgumentException {
+  public FrameSequence(
+    String name,
+    int start,
+    int end,
+    byte rate,
+    short width,
+    short height
+  ) throws IllegalArgumentException {
     super(name, start, end, rate, 0, start);
     validateInstantiation(start, end, rate, width, height);
     this.width = width;
@@ -67,32 +67,38 @@ public class FrameSequence extends Sequence {
   /** {@inheritDoc} */
   @Override
   public boolean equals(Object o) {
-    return o == this || (o != null && o.getClass() == getClass() && equals(
-        (FrameSequence) o));
+    return (
+      o == this ||
+      (o != null && o.getClass() == getClass() && equals((FrameSequence) o))
+    );
   }
 
   /** {@inheritDoc} */
   @Override
   public int hashCode() {
-    return Objects.hash(
-        name, start, end, rate, width, height
-    );
+    return Objects.hash(name, start, end, rate, width, height);
   }
 
   /** Returns whether the given {@code FrameSequence} is equivalent to this */
   public boolean equals(FrameSequence s) {
-    return s != null && s.width == this.width && s.height == this.height
-        && super.equals(s);
+    return (
+      s != null &&
+      s.width == this.width &&
+      s.height == this.height &&
+      super.equals(s)
+    );
   }
 
   /** Validates the given instantiation arguments */
-  private void validateInstantiation(int start,
-      int end,
-      byte rate,
-      short width,
-      short height)
-      throws IllegalArgumentException {
-    if (end <= start || rate <= 0 || width <= 0 || height <= 0)
+  private void validateInstantiation(
+    int start,
+    int end,
+    byte rate,
+    short width,
+    short height
+  ) throws IllegalArgumentException {
+    if (end <= start || rate <= 0 || width <= 0 || height <= 0) {
       throw new IllegalArgumentException();
+    }
   }
 }

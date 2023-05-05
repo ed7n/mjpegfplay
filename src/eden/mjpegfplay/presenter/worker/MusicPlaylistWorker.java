@@ -1,10 +1,8 @@
 package eden.mjpegfplay.presenter.worker;
 
-import eden.mjpegfplay.presenter.ApplicationInstance;
-import eden.mjpegfplay.presenter.Presenter;
-import eden.mjpegfplay.presenter.exception.BadMetadataException;
-import eden.mjpegfplay.presenter.exception.BadParameterException;
-import eden.mjpegfplay.presenter.exception.MalformedSequenceException;
+import static eden.mjpegfplay.model.TransportConstants.*;
+import static eden.mjpegfplay.presenter.ApplicationInstance.METADATA_FILE;
+import static eden.mjpegfplay.view.FrontPanelConstants.*;
 
 import eden.common.audio.OutputMixer;
 import eden.common.audio.OutputSource;
@@ -12,7 +10,10 @@ import eden.common.clock.SimpleSyncroTimer;
 import eden.common.io.ConfigFileReader;
 import eden.common.model.sequence.Sequence;
 import eden.common.video.render.RendererComponent;
-
+import eden.mjpegfplay.presenter.Presenter;
+import eden.mjpegfplay.presenter.exception.BadMetadataException;
+import eden.mjpegfplay.presenter.exception.BadParameterException;
+import eden.mjpegfplay.presenter.exception.MalformedSequenceException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,11 +27,10 @@ import java.util.Map;
 import java.util.Objects;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import static eden.mjpegfplay.model.TransportConstants.*;
-import static eden.mjpegfplay.presenter.ApplicationInstance.METADATA_FILE;
-import static eden.mjpegfplay.view.FrontPanelConstants.*;
-
 /**
+ * A {@code MusicPlaylistWorker} plays audio tracks sequentially rather than
+ * concurrently.
+ *
  * @author Brendon
  * @version u0r4, 11/06/2021.
  */
@@ -38,34 +38,24 @@ public class MusicPlaylistWorker implements SequenceWorker {
 
   /** 99:59 (H:MM:SS) */
   private static final short MAX_SECONDS = (100 * 60) - 1;
-
   /** Parent Presenter to which status events are to be notified */
   private final Presenter presenter;
-
   /** Path to working directory */
   private final String path;
-
   /** Sequence on which this SequenceWorker works */
   private final Sequence sequence;
-
   /** Sequence audio tracks */
   private final List<OutputSource> tracks;
-
   /** OutputMixer to which the audio tracks are to be mixed */
   private final OutputMixer mixer;
-
   /** Self-adjusting timer for everything else */
   private final SimpleSyncroTimer clock;
-
   /** Thread on which the working OutputMixer is to be run */
   private final Thread threadMixer;
-
   /** StringBuilder with which status event Strings are to be built */
   private final StringBuilder stringMaker;
-
   /** Current audio track being selected */
   private OutputSource track;
-
   /** Next channel on which an OutputSource is to be attached */
   private byte channel;
 
@@ -73,8 +63,8 @@ public class MusicPlaylistWorker implements SequenceWorker {
    * Makes a {@code MusicPlaylistWorker} with the given {@code Presenter} and
    * path to {@code Sequence} data
    */
-  public MusicPlaylistWorker(Presenter presenter, String path) throws
-      IOException, MalformedSequenceException {
+  public MusicPlaylistWorker(Presenter presenter, String path)
+    throws IOException, MalformedSequenceException {
     this.presenter = presenter;
     this.path = path;
     this.sequence = makeSequence(path);
@@ -97,35 +87,37 @@ public class MusicPlaylistWorker implements SequenceWorker {
       if (this.sequence.getPoint() >= this.sequence.getEnd()) {
         stop();
         this.presenter.call(null, " END");
-      } else
+      } else {
         stepForward();
+      }
       return;
     }
     if (this.clock.getCounter() % 25 == 0 && this.sequence.getSkip() == PLAY) {
       this.presenter.call(null, makeMessage());
       return;
-    } else if (this.sequence.getSkip() == FAST_FORWARD)
+    } else if (this.sequence.getSkip() == FAST_FORWARD) {
       this.track.skip(
           this.track.getFormat().getFrameSize() * 4800 * FAST_FORWARD
-      );
-    else if (this.sequence.getSkip() == FAST_REWIND) {
+        );
+    } else if (this.sequence.getSkip() == FAST_REWIND) {
       int position = this.track.getPosition();
-
       if (position == 0) {
-        if (this.sequence.getPoint() == this.sequence.getStart())
+        if (this.sequence.getPoint() == this.sequence.getStart()) {
           pause();
-        else {
+        } else {
           stepBackward();
-
-          this.track.skip(this.track.getStreamSize() + (this.track.getFormat()
-              .getFrameSize() * 4800 * FAST_REWIND));
+          this.track.skip(
+              this.track.getStreamSize() +
+              (this.track.getFormat().getFrameSize() * 4800 * FAST_REWIND)
+            );
         }
         return;
       }
       this.track.jumpToStart();
-
-      this.track.skip(position + (this.track.getFormat().getFrameSize() * 4800
-          * FAST_REWIND));
+      this.track.skip(
+          position +
+          (this.track.getFormat().getFrameSize() * 4800 * FAST_REWIND)
+        );
     }
     this.presenter.call(null, makeMessage());
   }
@@ -207,8 +199,9 @@ public class MusicPlaylistWorker implements SequenceWorker {
       this.presenter.call(null, makeMessage());
       return true;
     }
-    if (!this.sequence.setPoint(point))
+    if (!this.sequence.setPoint(point)) {
       return false;
+    }
     this.track = this.tracks.get(point - 1);
     this.mixer.attach(this.track, this.channel);
     this.mixer.setSolo(this.channel);
@@ -221,8 +214,7 @@ public class MusicPlaylistWorker implements SequenceWorker {
 
   /** {@inheritDoc} */
   @Override
-  public void trickPlay() {
-  }
+  public void trickPlay() {}
 
   /** {@inheritDoc} */
   @Override
@@ -230,10 +222,7 @@ public class MusicPlaylistWorker implements SequenceWorker {
     this.threadMixer.interrupt();
     this.clock.end();
     this.mixer.close();
-
-    this.tracks.stream()
-        .filter(Objects::nonNull)
-        .forEach(OutputSource::close);
+    this.tracks.stream().filter(Objects::nonNull).forEach(OutputSource::close);
   }
 
   /** {@inheritDoc} */
@@ -274,8 +263,7 @@ public class MusicPlaylistWorker implements SequenceWorker {
 
   /** {@inheritDoc} */
   @Override
-  public void setDrawStatistics(boolean drawStatistics) {
-  }
+  public void setDrawStatistics(boolean drawStatistics) {}
 
   /** {@inheritDoc} */
   @Override
@@ -306,8 +294,7 @@ public class MusicPlaylistWorker implements SequenceWorker {
 
   /** {@inheritDoc} */
   @Override
-  public void setTrack(int track) {
-  }
+  public void setTrack(int track) {}
 
   /** {@inheritDoc} */
   @Override
@@ -327,16 +314,15 @@ public class MusicPlaylistWorker implements SequenceWorker {
     this.stringMaker.append("TRACK  ");
     this.stringMaker.append(this.sequence.getPoint());
     this.stringMaker.append("  ");
-
-    if (this.sequence.getPoint() < 10)
+    if (this.sequence.getPoint() < 10) {
       this.stringMaker.append(' ');
+    }
     if (this.track == null) {
       this.stringMaker.append(" E:RR");
       return this.stringMaker.toString();
     }
     double progress = Math.floor(this.track.getElapsedSecond());
     int seconds, minutes;
-
     if (progress > MAX_SECONDS) {
       seconds = 59;
       minutes = 99;
@@ -344,14 +330,14 @@ public class MusicPlaylistWorker implements SequenceWorker {
       seconds = (int) (progress % 60);
       minutes = (int) Math.floor((progress % 3600) / 60);
     }
-
-    if (minutes < 10)
+    if (minutes < 10) {
       this.stringMaker.append(' ');
+    }
     this.stringMaker.append(minutes);
     this.stringMaker.append(':');
-
-    if (seconds < 10)
+    if (seconds < 10) {
       this.stringMaker.append('0');
+    }
     this.stringMaker.append(seconds);
     this.stringMaker.append(' ');
     return this.stringMaker.toString();
@@ -361,15 +347,15 @@ public class MusicPlaylistWorker implements SequenceWorker {
    * Returns a Sequence with the parameters given by the metadata file in the
    * directory pointed by the given path
    */
-  private Sequence makeSequence(String path) throws
-      IOException, MalformedSequenceException {
+  private Sequence makeSequence(String path)
+    throws IOException, MalformedSequenceException {
     Map<String, String> map = readMetadata(path);
-
     try {
-      return new Sequence(map.get("name"),
-          Integer.parseInt(map.get("start")),
-          Integer.parseInt(map.get("end")),
-          Byte.parseByte(map.get("rate"))
+      return new Sequence(
+        map.get("name"),
+        Integer.parseInt(map.get("start")),
+        Integer.parseInt(map.get("end")),
+        Byte.parseByte(map.get("rate"))
       );
     } catch (NumberFormatException e) {
       throw new BadMetadataException();
@@ -383,12 +369,13 @@ public class MusicPlaylistWorker implements SequenceWorker {
    * METADATA_FILE} in the directory pointed by the path of this SequenceWorker
    */
   private Map<String, String> readMetadata(String path) throws IOException {
-    if (!Files.isDirectory(Paths.get(path)))
+    if (!Files.isDirectory(Paths.get(path))) {
       throw new NotDirectoryException(path);
+    }
     String metadata = path + METADATA_FILE;
-
-    if (!Files.exists(Paths.get(metadata)))
+    if (!Files.exists(Paths.get(metadata))) {
       throw new NoSuchFileException(metadata);
+    }
     return new ConfigFileReader(metadata).readToMap();
   }
 
@@ -398,18 +385,17 @@ public class MusicPlaylistWorker implements SequenceWorker {
    */
   private List<OutputSource> makeTracks() throws IOException {
     List<OutputSource> out = new ArrayList<>();
-
-    for (int channel = this.sequence.getPoint();
-        channel <= this.sequence.getEnd();
-        channel++) {
+    for (
+      int channel = this.sequence.getPoint();
+      channel <= this.sequence.getEnd();
+      channel++
+    ) {
       String path = this.path + channel + ".wav";
-
       if (!Files.isRegularFile(Paths.get(path))) {
         out.add(null);
         continue;
       }
       File file = new File(path);
-
       try {
         out.add(new OutputSource(file));
       } catch (UnsupportedAudioFileException e) {
@@ -425,18 +411,18 @@ public class MusicPlaylistWorker implements SequenceWorker {
    */
   private OutputMixer makeMixer() {
     OutputSource source = null;
-
     for (OutputSource s : this.tracks) {
       if (s != null) {
         source = s;
         break;
       }
-      if (!this.sequence.setPoint(this.sequence.getPoint() + 1))
+      if (!this.sequence.setPoint(this.sequence.getPoint() + 1)) {
         break;
+      }
     }
-    OutputMixer out = source == null ? new OutputMixer((byte) 3)
-        : new OutputMixer((byte) 3, source.getFormat(), 9600);
-
+    OutputMixer out = source == null
+      ? new OutputMixer((byte) 3)
+      : new OutputMixer((byte) 3, source.getFormat(), 9600);
     out.attach(source);
     out.setSolo((short) 0);
     return out;

@@ -11,13 +11,10 @@ public class SimpleSyncroTimer extends EDENTimer implements Runnable {
 
   /** Timer task */
   private Runnable runnable;
-
   /** Timer Thread */
   private Thread thread;
-
   /** Timer delay */
   private short delay;
-
   /** Indicates whether this SimpleSyncroTimer is running */
   private boolean running;
 
@@ -48,10 +45,8 @@ public class SimpleSyncroTimer extends EDENTimer implements Runnable {
    */
   @Override
   public void run() {
-    while (!Thread.currentThread().isInterrupted())
-      try {
-      if (!running)
-          synchronized (this) {
+    while (!Thread.currentThread().isInterrupted()) try {
+      if (!running) synchronized (this) {
         wait();
       }
       this.runnable.run();
@@ -66,12 +61,10 @@ public class SimpleSyncroTimer extends EDENTimer implements Runnable {
   @Override
   public void start() {
     this.running = true;
-
     if (this.thread.isInterrupted()) {
       this.thread = new Thread(this);
       this.thread.start();
-    } else
-      synchronized (this) {
+    } else synchronized (this) {
       notifyAll();
     }
   }
@@ -105,11 +98,9 @@ public class SimpleSyncroTimer extends EDENTimer implements Runnable {
    */
   public void end() {
     this.thread.interrupt();
-
     try {
       this.thread.join();
-    } catch (InterruptedException e) {
-    }
+    } catch (InterruptedException e) {}
   }
 
   /** Returns the {@code Runnable} of this {@code SimpleSyncroTimer} */
@@ -120,8 +111,9 @@ public class SimpleSyncroTimer extends EDENTimer implements Runnable {
   /** Sets the number of fires per second for this {@code SimpleSyncroTimer} */
   @Override
   public void setFireRate(short fireRate) {
-    if (fireRate < 1 || fireRate > 1000)
+    if (fireRate < 1 || fireRate > 1000) {
       return;
+    }
     this.fireRate = fireRate;
     makeTimes();
   }
@@ -140,7 +132,6 @@ public class SimpleSyncroTimer extends EDENTimer implements Runnable {
   /** Housekeeping routine */
   private void track() {
     long time = System.currentTimeMillis();
-
     if ((!this.clock) && (time - this.time >= this.delayOffset)) {
       this.delay = this.delayActual;
       this.clock = true;

@@ -1,33 +1,33 @@
 package eden.mjpegfplay.view;
 
-import eden.mjpegfplay.presenter.ApplicationInstance;
+import static eden.common.shared.Constants.SPACE;
+import static eden.mjpegfplay.model.ApplicationInformation.*;
+import static eden.mjpegfplay.view.UIConstants.*;
+import static eden.mjpegfplay.view.UserCommands.*;
 
 import eden.common.video.CSSColor;
-
+import eden.mjpegfplay.presenter.ApplicationInstance;
 import java.util.ArrayList;
 import java.util.Collections;
+// Required by JSlider.
 import java.util.Hashtable;
 import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
-import javax.swing.JSpinner.DefaultEditor;
 import javax.swing.JSpinner;
+import javax.swing.JSpinner.DefaultEditor;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
-import static eden.mjpegfplay.model.ApplicationInformation.*;
-import static eden.mjpegfplay.view.UIConstants.*;
-import static eden.mjpegfplay.view.UserCommands.*;
-
 /**
  * This class hides the construction of an {@code ApplicationUI}.
  *
  * @author Brendon
- * @version u0r3, 11/28/2018.
+ * @version u0r5, 05/05/2023.
  *
  * @see ApplicationUI
  */
@@ -54,7 +54,7 @@ public class ApplicationUIMaker extends ApplicationUI {
     this.frameMain.setName("Application Main Frame");
     this.frameMain.setBackground(CSSColor.BLACK);
     this.frameMain.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-    this.frameMain.setTitle(APPLICATION_NAME + " " + APPLICATION_VERSION);
+    this.frameMain.setTitle(APPLICATION_NAME + SPACE + APPLICATION_VERSION);
     this.frameMain.setMinimumSize(SIZE_FRAME);
     this.frameMain.setJMenuBar(this.menu.getMenuBar());
     this.frameMain.setLayout(this.layout);
@@ -62,10 +62,9 @@ public class ApplicationUIMaker extends ApplicationUI {
     this.frameFloat.addWindowListener(new FloatingWindowListener());
     this.frameFloat.setName("Application Floating Frame");
     this.frameFloat.setBackground(CSSColor.BLACK);
-
     this.frameFloat.setTitle(
-        "Render - " + APPLICATION_NAME + " " + APPLICATION_VERSION
-    );
+        "Render - " + APPLICATION_NAME + SPACE + APPLICATION_VERSION
+      );
     initializeContainers();
     this.frameMain.validate();
     this.frameMain.pack();
@@ -91,80 +90,101 @@ public class ApplicationUIMaker extends ApplicationUI {
     this.panelRenderer.setBackground(CSSColor.BLACK);
     this.panelRenderer.setName("Renderer Panel");
     this.panelRenderer.setLayout(this.layout);
-
     this.layout.putConstraint(
-        SpringLayout.NORTH, this.panelRenderer,
+        SpringLayout.NORTH,
+        this.panelRenderer,
         0,
-        SpringLayout.NORTH, this.frameMain.getContentPane()
-    );
+        SpringLayout.NORTH,
+        this.frameMain.getContentPane()
+      );
     this.layout.putConstraint(
-        SpringLayout.SOUTH, this.panelRenderer,
+        SpringLayout.SOUTH,
+        this.panelRenderer,
         -160,
-        SpringLayout.SOUTH, this.frameMain.getContentPane()
-    );
+        SpringLayout.SOUTH,
+        this.frameMain.getContentPane()
+      );
     this.layout.putConstraint(
-        SpringLayout.WEST, this.panelRenderer,
+        SpringLayout.WEST,
+        this.panelRenderer,
         0,
-        SpringLayout.WEST, this.frameMain.getContentPane()
-    );
+        SpringLayout.WEST,
+        this.frameMain.getContentPane()
+      );
     this.layout.putConstraint(
-        SpringLayout.EAST, this.panelRenderer,
+        SpringLayout.EAST,
+        this.panelRenderer,
         0,
-        SpringLayout.EAST, this.frameMain.getContentPane()
-    );
+        SpringLayout.EAST,
+        this.frameMain.getContentPane()
+      );
     initializeBackdrop();
   }
 
   private void initializeBackdrop() {
     this.panelRenderer.add(BackdropComponent.INSTANCE);
-
     this.layout.putConstraint(
-        SpringLayout.NORTH, BackdropComponent.INSTANCE,
+        SpringLayout.NORTH,
+        BackdropComponent.INSTANCE,
         0,
-        SpringLayout.NORTH, this.panelRenderer
-    );
+        SpringLayout.NORTH,
+        this.panelRenderer
+      );
     this.layout.putConstraint(
-        SpringLayout.SOUTH, BackdropComponent.INSTANCE,
+        SpringLayout.SOUTH,
+        BackdropComponent.INSTANCE,
         0,
-        SpringLayout.SOUTH, this.panelRenderer
-    );
+        SpringLayout.SOUTH,
+        this.panelRenderer
+      );
     this.layout.putConstraint(
-        SpringLayout.WEST, BackdropComponent.INSTANCE,
+        SpringLayout.WEST,
+        BackdropComponent.INSTANCE,
         0,
-        SpringLayout.WEST, this.panelRenderer
-    );
+        SpringLayout.WEST,
+        this.panelRenderer
+      );
     this.layout.putConstraint(
-        SpringLayout.EAST, BackdropComponent.INSTANCE,
+        SpringLayout.EAST,
+        BackdropComponent.INSTANCE,
         0,
-        SpringLayout.EAST, this.panelRenderer
-    );
+        SpringLayout.EAST,
+        this.panelRenderer
+      );
   }
 
   private void initializePanelInterface() {
     this.panelInterface.setBackground(COLOR_INTERFACE);
     this.panelInterface.setName("Interface Panel");
     this.panelInterface.setLayout(this.layout);
-
     this.layout.putConstraint(
-        SpringLayout.NORTH, this.panelInterface,
+        SpringLayout.NORTH,
+        this.panelInterface,
         0,
-        SpringLayout.SOUTH, this.panelRenderer
-    );
+        SpringLayout.SOUTH,
+        this.panelRenderer
+      );
     this.layout.putConstraint(
-        SpringLayout.SOUTH, this.panelInterface,
+        SpringLayout.SOUTH,
+        this.panelInterface,
         0,
-        SpringLayout.SOUTH, this.frameMain.getContentPane()
-    );
+        SpringLayout.SOUTH,
+        this.frameMain.getContentPane()
+      );
     this.layout.putConstraint(
-        SpringLayout.WEST, this.panelInterface,
+        SpringLayout.WEST,
+        this.panelInterface,
         0,
-        SpringLayout.WEST, this.frameMain.getContentPane()
-    );
+        SpringLayout.WEST,
+        this.frameMain.getContentPane()
+      );
     this.layout.putConstraint(
-        SpringLayout.EAST, this.panelInterface,
+        SpringLayout.EAST,
+        this.panelInterface,
         0,
-        SpringLayout.EAST, this.frameMain.getContentPane()
-    );
+        SpringLayout.EAST,
+        this.frameMain.getContentPane()
+      );
     initializeLabels();
     initializeButtons();
     initializeSlider();
@@ -173,180 +193,228 @@ public class ApplicationUIMaker extends ApplicationUI {
   }
 
   private void initializeLabels() {
-    for (JLabel l : this.labels)
-      this.panelInterface.add(l);
+    this.labels.forEach(l -> this.panelInterface.add(l));
     for (byte b = 0; b < 7; b++) {
       this.layout.putConstraint(
-          SpringLayout.SOUTH, this.labels.get(b),
+          SpringLayout.SOUTH,
+          this.labels.get(b),
           0,
           SpringLayout.NORTH,
           b > 4 ? this.buttons.get(6) : this.buttons.get(0)
-      );
-      if (b < 4)
-        this.layout.putConstraint(
-            SpringLayout.HORIZONTAL_CENTER, this.labels.get(b),
-            0,
-            SpringLayout.HORIZONTAL_CENTER, this.buttons.get(b)
         );
-      else if (b == 6)
+      if (b < 4) {
         this.layout.putConstraint(
-            SpringLayout.HORIZONTAL_CENTER, this.labels.get(b),
+            SpringLayout.HORIZONTAL_CENTER,
+            this.labels.get(b),
             0,
-            SpringLayout.HORIZONTAL_CENTER, this.buttons.get(9)
-        );
-      if (4 + b >= 7)
+            SpringLayout.HORIZONTAL_CENTER,
+            this.buttons.get(b)
+          );
+      } else if (b == 6) {
+        this.layout.putConstraint(
+            SpringLayout.HORIZONTAL_CENTER,
+            this.labels.get(b),
+            0,
+            SpringLayout.HORIZONTAL_CENTER,
+            this.buttons.get(9)
+          );
+      }
+      if (4 + b >= 7) {
         continue;
+      }
       this.layout.putConstraint(
-          SpringLayout.HORIZONTAL_CENTER, this.labels.get(4 + b),
+          SpringLayout.HORIZONTAL_CENTER,
+          this.labels.get(4 + b),
           0,
-          SpringLayout.EAST, this.buttons.get(4 + (2 * b))
-      );
+          SpringLayout.EAST,
+          this.buttons.get(4 + (2 * b))
+        );
     }
     this.layout.putConstraint(
-        SpringLayout.SOUTH, this.labels.get(7),
+        SpringLayout.SOUTH,
+        this.labels.get(7),
         0,
-        SpringLayout.NORTH, this.slider
-    );
+        SpringLayout.NORTH,
+        this.slider
+      );
     this.layout.putConstraint(
-        SpringLayout.HORIZONTAL_CENTER, this.labels.get(7),
+        SpringLayout.HORIZONTAL_CENTER,
+        this.labels.get(7),
         0,
-        SpringLayout.HORIZONTAL_CENTER, this.slider
-    );
+        SpringLayout.HORIZONTAL_CENTER,
+        this.slider
+      );
     this.layout.putConstraint(
-        SpringLayout.SOUTH, this.labels.get(8),
+        SpringLayout.SOUTH,
+        this.labels.get(8),
         0,
-        SpringLayout.NORTH, this.spinner
-    );
+        SpringLayout.NORTH,
+        this.spinner
+      );
     this.layout.putConstraint(
-        SpringLayout.HORIZONTAL_CENTER, this.labels.get(8),
+        SpringLayout.HORIZONTAL_CENTER,
+        this.labels.get(8),
         0,
-        SpringLayout.HORIZONTAL_CENTER, this.spinner
-    );
+        SpringLayout.HORIZONTAL_CENTER,
+        this.spinner
+      );
   }
 
   private void initializeButtons() {
-    for (JButton b : this.buttons)
-      this.panelInterface.add(b);
+    this.buttons.forEach(b -> this.panelInterface.add(b));
     for (byte b = 0; b < 6; b++) {
       this.layout.putConstraint(
-          SpringLayout.NORTH, this.buttons.get(b),
+          SpringLayout.NORTH,
+          this.buttons.get(b),
           -160 + (PADDING_VERTICAL * 2),
-          SpringLayout.SOUTH, this.panelInterface
-      );
+          SpringLayout.SOUTH,
+          this.panelInterface
+        );
       this.layout.putConstraint(
-          SpringLayout.SOUTH, this.buttons.get(b),
+          SpringLayout.SOUTH,
+          this.buttons.get(b),
           BUTTON_HEIGHT,
-          SpringLayout.NORTH, this.buttons.get(b)
-      );
+          SpringLayout.NORTH,
+          this.buttons.get(b)
+        );
       this.layout.putConstraint(
-          SpringLayout.WEST, this.buttons.get(b),
+          SpringLayout.WEST,
+          this.buttons.get(b),
           b == 0 ? PADDING_HORIZONTAL : 0,
           b == 0 ? SpringLayout.WEST : SpringLayout.EAST,
           b == 0 ? this.frameMain.getContentPane() : this.buttons.get(b - 1)
-      );
+        );
       this.layout.putConstraint(
-          SpringLayout.EAST, this.buttons.get(b),
+          SpringLayout.EAST,
+          this.buttons.get(b),
           b == 1 ? BUTTON_WIDTH * 2 : BUTTON_WIDTH,
-          SpringLayout.WEST, this.buttons.get(b)
-      );
+          SpringLayout.WEST,
+          this.buttons.get(b)
+        );
     }
     for (byte b = 6; b < 12; b++) {
       this.layout.putConstraint(
-          SpringLayout.NORTH, this.buttons.get(b),
+          SpringLayout.NORTH,
+          this.buttons.get(b),
           PADDING_HORIZONTAL * 2,
-          SpringLayout.SOUTH, this.buttons.get(0)
-      );
+          SpringLayout.SOUTH,
+          this.buttons.get(0)
+        );
       this.layout.putConstraint(
-          SpringLayout.SOUTH, this.buttons.get(b),
+          SpringLayout.SOUTH,
+          this.buttons.get(b),
           BUTTON_HEIGHT,
-          SpringLayout.NORTH, this.buttons.get(b)
-      );
+          SpringLayout.NORTH,
+          this.buttons.get(b)
+        );
       this.layout.putConstraint(
-          SpringLayout.WEST, this.buttons.get(b),
+          SpringLayout.WEST,
+          this.buttons.get(b),
           b == 6 ? PADDING_HORIZONTAL : 0,
           b == 6 ? SpringLayout.WEST : SpringLayout.EAST,
           b == 6 ? this.frameMain.getContentPane() : this.buttons.get(b - 1)
-      );
+        );
       this.layout.putConstraint(
-          SpringLayout.EAST, this.buttons.get(b),
+          SpringLayout.EAST,
+          this.buttons.get(b),
           BUTTON_WIDTH,
-          SpringLayout.WEST, this.buttons.get(b)
-      );
+          SpringLayout.WEST,
+          this.buttons.get(b)
+        );
     }
     this.layout.putConstraint(
-        SpringLayout.WEST, this.buttons.get(8),
+        SpringLayout.WEST,
+        this.buttons.get(8),
         BUTTON_WIDTH / 2,
-        SpringLayout.EAST, this.buttons.get(7)
-    );
+        SpringLayout.EAST,
+        this.buttons.get(7)
+      );
     this.layout.putConstraint(
-        SpringLayout.WEST, this.buttons.get(11),
+        SpringLayout.WEST,
+        this.buttons.get(11),
         BUTTON_WIDTH / 2,
-        SpringLayout.EAST, this.buttons.get(10)
-    );
+        SpringLayout.EAST,
+        this.buttons.get(10)
+      );
   }
 
   private void initializeSlider() {
     this.panelInterface.add(this.slider);
-
     this.layout.putConstraint(
-        SpringLayout.NORTH, this.slider,
+        SpringLayout.NORTH,
+        this.slider,
         PADDING_HORIZONTAL * 2,
-        SpringLayout.SOUTH, this.buttons.get(6)
-    );
+        SpringLayout.SOUTH,
+        this.buttons.get(6)
+      );
     this.layout.putConstraint(
-        SpringLayout.WEST, this.slider,
+        SpringLayout.WEST,
+        this.slider,
         PADDING_HORIZONTAL,
-        SpringLayout.WEST, this.panelInterface
-    );
+        SpringLayout.WEST,
+        this.panelInterface
+      );
     this.layout.putConstraint(
-        SpringLayout.EAST, this.slider,
+        SpringLayout.EAST,
+        this.slider,
         SLIDER_WIDTH,
-        SpringLayout.WEST, this.slider
-    );
+        SpringLayout.WEST,
+        this.slider
+      );
   }
 
   private void initializeSpinner() {
     this.panelInterface.add(this.spinner);
-
     this.layout.putConstraint(
-        SpringLayout.NORTH, this.spinner,
+        SpringLayout.NORTH,
+        this.spinner,
         0,
-        SpringLayout.NORTH, this.slider
-    );
+        SpringLayout.NORTH,
+        this.slider
+      );
     this.layout.putConstraint(
-        SpringLayout.HORIZONTAL_CENTER, this.spinner,
+        SpringLayout.HORIZONTAL_CENTER,
+        this.spinner,
         0,
-        SpringLayout.HORIZONTAL_CENTER, this.buttons.get(9)
-    );
+        SpringLayout.HORIZONTAL_CENTER,
+        this.buttons.get(9)
+      );
   }
 
   private void initializePanel() {
     this.panelInterface.add(this.frontPanel);
-
     this.layout.putConstraint(
-        SpringLayout.NORTH, this.frontPanel,
+        SpringLayout.NORTH,
+        this.frontPanel,
         0,
-        SpringLayout.NORTH, this.buttons.get(0)
-    );
+        SpringLayout.NORTH,
+        this.buttons.get(0)
+      );
     this.layout.putConstraint(
-        SpringLayout.SOUTH, this.frontPanel,
+        SpringLayout.SOUTH,
+        this.frontPanel,
         PANEL_HEIGHT,
-        SpringLayout.NORTH, this.frontPanel
-    );
+        SpringLayout.NORTH,
+        this.frontPanel
+      );
     this.layout.putConstraint(
-        SpringLayout.WEST, this.frontPanel,
+        SpringLayout.WEST,
+        this.frontPanel,
         -PANEL_WIDTH - PADDING_HORIZONTAL,
-        SpringLayout.EAST, this.panelInterface
-    );
+        SpringLayout.EAST,
+        this.panelInterface
+      );
     this.layout.putConstraint(
-        SpringLayout.EAST, this.frontPanel,
+        SpringLayout.EAST,
+        this.frontPanel,
         PANEL_WIDTH,
-        SpringLayout.WEST, this.frontPanel
-    );
+        SpringLayout.WEST,
+        this.frontPanel
+      );
   }
 
   private List<JLabel> makeLabels() {
-    List<JLabel> out = new ArrayList<>(7);
+    List<JLabel> out = new ArrayList<>(9);
     out.add(new InterfaceLabel("TRICK"));
     out.add(new InterfaceLabel("PLAY / RESUME"));
     out.add(new InterfaceLabel("PAUSE"));
@@ -365,31 +433,14 @@ public class ApplicationUIMaker extends ApplicationUI {
     out.add(new InterfaceButton(">", T_PLAY, this));
     out.add(new InterfaceButton("||", T_PAUSE, this));
     out.add(new InterfaceButton("[]", T_STOP, this));
-
-    out.add(new InterfaceButton(
-        "<<", T_FAST_REWIND, this, "Fast Rewind"
-    ));
-    out.add(new InterfaceButton(
-        ">>", T_FAST_FORWARD, this, "Fast Forward"
-    ));
-    out.add(new InterfaceButton(
-        "<|", T_STEP_BACKWARD, this, "Step Backward"
-    ));
-    out.add(new InterfaceButton(
-        "|>", T_STEP_FORWARD, this, "Step Forward"
-    ));
-    out.add(new InterfaceButton(
-        "|<", T_JUMP_TO_START, this, "Jump To Start"
-    ));
-    out.add(new InterfaceButton(
-        ">#", T_JUMP_TO_FRAME, this, "Jump To Frame..."
-    ));
-    out.add(new InterfaceButton(
-        ">|", T_JUMP_TO_END, this, "Jump To End"
-    ));
-    out.add(new InterfaceButton(
-        "/\\", F_CLOSE, this, "Eject"
-    ));
+    out.add(new InterfaceButton("<<", T_FAST_REWIND, this, "Fast Rewind"));
+    out.add(new InterfaceButton(">>", T_FAST_FORWARD, this, "Fast Forward"));
+    out.add(new InterfaceButton("<|", T_STEP_BACKWARD, this, "Step Backward"));
+    out.add(new InterfaceButton("|>", T_STEP_FORWARD, this, "Step Forward"));
+    out.add(new InterfaceButton("|<", T_JUMP_TO_START, this, "Jump To Start"));
+    out.add(new InterfaceButton(">#", T_JUMP_TO_FRAME, this, "Jump To Frame…"));
+    out.add(new InterfaceButton(">|", T_JUMP_TO_END, this, "Jump To End"));
+    out.add(new InterfaceButton("/\\", F_EJECT, this, "Eject"));
     return Collections.unmodifiableList(out);
   }
 
@@ -409,10 +460,9 @@ public class ApplicationUIMaker extends ApplicationUI {
 
   private JSpinner makeSpinner() {
     // ack: https://stackoverflow.com/a/2902275
-
-    JSpinner out = new JSpinner(new SpinnerNumberModel(
-        1, 1, Byte.MAX_VALUE, 1
-    ));
+    JSpinner out = new JSpinner(
+      new SpinnerNumberModel(1, 1, Byte.MAX_VALUE, 1)
+    );
     out.addChangeListener(this);
     out.setBackground(COLOR_INTERFACE);
     out.setFont(FONT_BUTTON);

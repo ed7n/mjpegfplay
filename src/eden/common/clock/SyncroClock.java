@@ -9,7 +9,7 @@ import javax.swing.Timer;
  * overcomes timing discrepancies introduced by its low-precision nature by
  * adjusting its delay as necessary, alternating between floor and ceil
  * intervals.
- * <p>
+ *
  * A {@code SyncroClock} is a (simplified) {@code Timer} with an additional
  * housekeeping {@code ActionListener}.
  *
@@ -23,10 +23,8 @@ public class SyncroClock extends EDENTimer {
 
   /** Working Timer */
   private final Timer timer;
-
   /** Tick ActionEvent */
   private final ActionEvent tickEvent;
-
   /** ActionListener that manages the alternating timing */
   private ActionListener listener;
 
@@ -42,10 +40,7 @@ public class SyncroClock extends EDENTimer {
   public SyncroClock(short fireRate) {
     super(fireRate);
     this.timer = new Timer(0, null);
-
-    this.tickEvent = new ActionEvent(
-        this, ActionEvent.ACTION_LAST + 1, "tick"
-    );
+    this.tickEvent = new ActionEvent(this, ActionEvent.ACTION_LAST + 1, "tick");
     initialize();
   }
 
@@ -55,8 +50,9 @@ public class SyncroClock extends EDENTimer {
    */
   @Override
   public void start() {
-    if (!this.timer.isRunning())
+    if (!this.timer.isRunning()) {
       this.timer.start();
+    }
   }
 
   /**
@@ -93,8 +89,9 @@ public class SyncroClock extends EDENTimer {
    */
   @Override
   public void tick() {
-    for (ActionListener l : this.timer.getActionListeners())
+    for (ActionListener l : this.timer.getActionListeners()) {
       l.actionPerformed(this.tickEvent);
+    }
   }
 
   /**
@@ -113,9 +110,9 @@ public class SyncroClock extends EDENTimer {
     this.fireRate = fireRate;
     makeTimes();
     initialize();
-
-    if (wasRunning)
+    if (wasRunning) {
       this.timer.start();
+    }
   }
 
   /**
@@ -146,21 +143,22 @@ public class SyncroClock extends EDENTimer {
    * Initializes the Timer, adding the necessary housekeeping ActionListener.
    */
   private void initialize() {
-    if (this.listener != null)
+    if (this.listener != null) {
       this.timer.removeActionListener(this.listener);
-    this.listener = e -> {
-      long time = System.currentTimeMillis();
-
-      if ((!this.clock) && (time - this.time >= this.delayOffset)) {
-        this.timer.setDelay(this.delayActual);
-        this.clock = true;
-      } else if ((this.clock) && (time - this.time <= this.delayActual)) {
-        this.timer.setDelay(this.delayOffset);
-        this.clock = false;
-      }
-      this.time = time;
-      this.counter.set(((this.counter.get() + 1) % this.fireRate));
-    };
+    }
+    this.listener =
+      e -> {
+        long time = System.currentTimeMillis();
+        if ((!this.clock) && (time - this.time >= this.delayOffset)) {
+          this.timer.setDelay(this.delayActual);
+          this.clock = true;
+        } else if ((this.clock) && (time - this.time <= this.delayActual)) {
+          this.timer.setDelay(this.delayOffset);
+          this.clock = false;
+        }
+        this.time = time;
+        this.counter.set(((this.counter.get() + 1) % this.fireRate));
+      };
     this.timer.addActionListener(this.listener);
   }
 }

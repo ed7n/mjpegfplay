@@ -1,11 +1,8 @@
 package eden.mjpegfplay.presenter.worker;
 
-import eden.mjpegfplay.presenter.ApplicationInstance;
-import eden.mjpegfplay.presenter.NullPresenter;
-import eden.mjpegfplay.presenter.Presenter;
-import eden.mjpegfplay.presenter.exception.BadMetadataException;
-import eden.mjpegfplay.presenter.exception.BadParameterException;
-import eden.mjpegfplay.presenter.exception.MalformedSequenceException;
+import static eden.mjpegfplay.model.TransportConstants.*;
+import static eden.mjpegfplay.presenter.ApplicationInstance.METADATA_FILE;
+import static eden.mjpegfplay.view.FrontPanelConstants.*;
 
 import eden.common.audio.OutputMixer;
 import eden.common.audio.OutputSource;
@@ -17,7 +14,11 @@ import eden.common.model.sequence.FileFrameSequence;
 import eden.common.model.sequence.Sequence;
 import eden.common.video.render.MultiLensFrameRenderer;
 import eden.common.video.render.RendererComponent;
-
+import eden.mjpegfplay.presenter.NullPresenter;
+import eden.mjpegfplay.presenter.Presenter;
+import eden.mjpegfplay.presenter.exception.BadMetadataException;
+import eden.mjpegfplay.presenter.exception.BadParameterException;
+import eden.mjpegfplay.presenter.exception.MalformedSequenceException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,10 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javax.sound.sampled.UnsupportedAudioFileException;
-
-import static eden.mjpegfplay.model.TransportConstants.*;
-import static eden.mjpegfplay.presenter.ApplicationInstance.METADATA_FILE;
-import static eden.mjpegfplay.view.FrontPanelConstants.*;
 
 /**
  * A {@code FrameSequenceWorker} manages a {@code FileFrameSequence} and its A/V
@@ -51,49 +48,34 @@ public class FrameSequenceWorker implements SequenceWorker {
 
   /** Default number of {@code FileFrameLenses} */
   public static final byte DEFAULT_LENSES = 3;
-
   /** 9:59:59 (H:MM:SS) */
   protected static final short MAX_SECONDS = (60 * 60 * 9) - 1;
-
   /** Parent Presenter to which status events are to be notified */
   protected final Presenter presenter;
-
   /** Path to working directory */
   protected final String path;
-
   /** Sequence on which this SequenceWorker works */
   protected final Sequence sequence;
-
   /** Sequence data readers and buffers (Lenses) */
   protected final List<FileFrameLens> lenses;
-
   /** EDENRenderer with which Frames are to be drawn */
   protected final MultiLensFrameRenderer renderer;
-
   /** JComponent to which Frames are to be drawn */
   protected final RendererComponent component;
-
   /** Sequence audio tracks */
   protected final List<OutputSource> tracks;
-
   /** A/V synchronization pilot */
   protected final OutputSource pilot;
-
   /** OutputMixer to which the audio tracks are to be mixed */
   protected final OutputMixer mixer;
-
   /** Self-adjusting {@code Timer} on which the EDENRenderer is to be run */
   protected final SyncroClock clockRender;
-
   /** Self-adjusting timer for everything else */
   protected final SimpleSyncroTimer clock;
-
   /** Threads on which the Lenses are to be run */
   protected final List<Thread> threadsLens;
-
   /** Thread on which the working OutputMixer is to be run */
   protected final Thread threadMixer;
-
   /** StringBuilder with which status event Strings are to be built */
   protected final StringBuilder stringMaker;
 
@@ -101,8 +83,8 @@ public class FrameSequenceWorker implements SequenceWorker {
    * Makes a {@code FrameSequenceWorker} with the given {@code Presenter} and
    * path to {@code Sequence} data
    */
-  public FrameSequenceWorker(Presenter presenter, String path) throws
-      IOException, MalformedSequenceException {
+  public FrameSequenceWorker(Presenter presenter, String path)
+    throws IOException, MalformedSequenceException {
     this(presenter, path, DEFAULT_LENSES);
   }
 
@@ -116,7 +98,7 @@ public class FrameSequenceWorker implements SequenceWorker {
    * malformed
    */
   public FrameSequenceWorker(Presenter presenter, String path, byte lenses)
-      throws IOException, MalformedSequenceException {
+    throws IOException, MalformedSequenceException {
     this(presenter, path, lenses, false);
     initialize();
   }
@@ -126,20 +108,22 @@ public class FrameSequenceWorker implements SequenceWorker {
    * their overriding update method, which may throw NullPointerException as
    * some subclass-specific fields are yet to be initialized.
    */
-  protected FrameSequenceWorker(Presenter presenter,
-      String path,
-      byte lenses,
-      boolean dummy)
-      throws IOException, MalformedSequenceException {
+  protected FrameSequenceWorker(
+    Presenter presenter,
+    String path,
+    byte lenses,
+    boolean dummy
+  ) throws IOException, MalformedSequenceException {
     FileFrameSequence sequence = makeSequence(path);
     this.presenter = presenter == null ? new NullPresenter() : presenter;
     this.path = path;
     this.sequence = sequence;
     this.lenses = makeLenses(path, sequence, lenses);
-
-    this.renderer = new MultiLensFrameRenderer(this.lenses,
+    this.renderer =
+      new MultiLensFrameRenderer(
+        this.lenses,
         (double) sequence.getWidth() / sequence.getHeight()
-    );
+      );
     this.component = makeComponent();
     this.tracks = makeTracks();
     this.pilot = makePilot();
@@ -173,23 +157,33 @@ public class FrameSequenceWorker implements SequenceWorker {
   public void update() {
     int frame;
     boolean sync = false;
-
-    if (this.clock.getCounter() == 0 && this.sequence.getSkip() == PLAY
-        && this.pilot != null) {
+    if (
+      this.clock.getCounter() == 0 &&
+      this.sequence.getSkip() == PLAY &&
+      this.pilot != null
+    ) {
       frame = syncAV();
       sync = true;
-    } else
+    } else {
       frame = this.sequence.getPoint() + this.sequence.getSkip();
+    }
     if (!this.sequence.setPoint(frame)) {
       updateOnBounds();
       pause(true);
       this.lenses.forEach(FileFrameLens::await);
       this.clockRender.tick();
-    } else if (sync)
+    } else if (sync) {
       this.lenses.forEach(FileFrameLens::call);
-    if ((this.sequence.getSkip() == PLAY && this.clock.getCounter()
-        % (this.sequence.getRate() / 2) == 0) || this.sequence.getSkip() != PLAY)
+    }
+    if (
+      (
+        this.sequence.getSkip() == PLAY &&
+        this.clock.getCounter() % (this.sequence.getRate() / 2) == 0
+      ) ||
+      this.sequence.getSkip() != PLAY
+    ) {
       this.presenter.call(null, makeMessage());
+    }
   }
 
   /** {@inheritDoc} */
@@ -249,9 +243,12 @@ public class FrameSequenceWorker implements SequenceWorker {
   /** {@inheritDoc} */
   @Override
   public void stepBackward() {
-    if (this.sequence.getSkip() != 0 || !this.sequence.setPoint(this.sequence
-        .getPoint() - 1))
+    if (
+      this.sequence.getSkip() != 0 ||
+      !this.sequence.setPoint(this.sequence.getPoint() - 1)
+    ) {
       return;
+    }
     this.lenses.forEach(FileFrameLens::call);
     this.lenses.forEach(FileFrameLens::await);
     this.renderer.setReverse(true);
@@ -262,9 +259,12 @@ public class FrameSequenceWorker implements SequenceWorker {
   /** {@inheritDoc} */
   @Override
   public void stepForward() {
-    if (this.sequence.getSkip() != PAUSE || !this.sequence.setPoint(
-        this.sequence.getPoint() + 1))
+    if (
+      this.sequence.getSkip() != PAUSE ||
+      !this.sequence.setPoint(this.sequence.getPoint() + 1)
+    ) {
       return;
+    }
     this.lenses.forEach(FileFrameLens::call);
     this.lenses.forEach(FileFrameLens::await);
     this.renderer.setReverse(false);
@@ -287,10 +287,10 @@ public class FrameSequenceWorker implements SequenceWorker {
   /** {@inheritDoc} */
   @Override
   public boolean jump(int point) {
-    if (!this.sequence.setPoint(point))
+    if (!this.sequence.setPoint(point)) {
       return false;
+    }
     this.lenses.forEach(FileFrameLens::call);
-
     if (this.sequence.getSkip() == PAUSE) {
       this.lenses.forEach(FileFrameLens::await);
       this.clockRender.tick();
@@ -320,10 +320,7 @@ public class FrameSequenceWorker implements SequenceWorker {
     this.clockRender.stop();
     this.clock.end();
     this.mixer.close();
-
-    this.tracks.stream()
-        .filter(Objects::nonNull)
-        .forEach(OutputSource::close);
+    this.tracks.stream().filter(Objects::nonNull).forEach(OutputSource::close);
     this.renderer.clearComponents();
   }
 
@@ -426,12 +423,11 @@ public class FrameSequenceWorker implements SequenceWorker {
     this.clockRender.pause();
     this.clock.pause();
     this.mixer.setHold(true);
-
     if (!onBound) {
       int frame = this.renderer.getFrame();
-
-      if (frame != Integer.MIN_VALUE)
+      if (frame != Integer.MIN_VALUE) {
         this.sequence.setPoint(frame);
+      }
     }
     this.presenter.call(PAUSE);
   }
@@ -441,17 +437,22 @@ public class FrameSequenceWorker implements SequenceWorker {
    * Sequence of this SequenceWorker is at
    */
   protected void updateOnBounds() {
-    if (this.sequence.getElapsedPercent() < 0.5)
+    if (this.sequence.getElapsedPercent() < 0.5) {
       this.sequence.goToStart();
-    else
+    } else {
       this.sequence.goToEnd();
+    }
   }
 
   /** Performs A/V syncing with the pilot of this SequenceWorker */
   protected int syncAV() {
-    return (int) Math.floor(
-        this.pilot.getElapsedPercent(this.mixer.getLineFree())
-        * (this.sequence.getLength() - 1)) + this.sequence.getStart();
+    return (
+      (int) Math.floor(
+        this.pilot.getElapsedPercent(this.mixer.getLineFree()) *
+        (this.sequence.getLength() - 1)
+      ) +
+      this.sequence.getStart()
+    );
   }
 
   /**
@@ -467,14 +468,13 @@ public class FrameSequenceWorker implements SequenceWorker {
    */
   protected void skipAudioTracks(double percent) {
     this.mixer.rewindAll();
-
     this.tracks.stream()
-        .filter(s -> !(s == null))
-        .forEachOrdered(s -> {
-          long skip = Math.round(percent * s.getStreamSize());
-          skip -= skip % this.pilot.getFormat().getFrameSize();
-          s.skip(skip);
-        });
+      .filter(s -> !(s == null))
+      .forEachOrdered(s -> {
+        long skip = Math.round(percent * s.getStreamSize());
+        skip -= skip % this.pilot.getFormat().getFrameSize();
+        s.skip(skip);
+      });
   }
 
   /** Returns the time counter String to be displayed */
@@ -482,7 +482,6 @@ public class FrameSequenceWorker implements SequenceWorker {
     double progress = Math.floor(this.sequence.getElapsedSecond());
     int seconds, minutes, hours;
     this.stringMaker.setLength(0);
-
     if (progress > MAX_SECONDS) {
       seconds = 59;
       minutes = 59;
@@ -494,14 +493,14 @@ public class FrameSequenceWorker implements SequenceWorker {
     }
     this.stringMaker.append(hours);
     this.stringMaker.append(':');
-
-    if (minutes < 10)
+    if (minutes < 10) {
       this.stringMaker.append('0');
+    }
     this.stringMaker.append(minutes);
     this.stringMaker.append(':');
-
-    if (seconds < 10)
+    if (seconds < 10) {
       this.stringMaker.append('0');
+    }
     this.stringMaker.append(seconds);
     this.stringMaker.append(TEXT_BLANK);
     return this.stringMaker.toString();
@@ -511,18 +510,18 @@ public class FrameSequenceWorker implements SequenceWorker {
    * Returns a FileFrameSequence with the parameters given by the metadata file
    * in the directory pointed by the given path
    */
-  private FileFrameSequence makeSequence(String path) throws
-      IOException, MalformedSequenceException {
+  private FileFrameSequence makeSequence(String path)
+    throws IOException, MalformedSequenceException {
     Map<String, String> map = readMetadata(path);
-
     try {
-      return new FileFrameSequence(map.get("name"),
-          Integer.parseInt(map.get("start")),
-          Integer.parseInt(map.get("end")),
-          Byte.parseByte(map.get("rate")),
-          Short.parseShort(map.get("width")),
-          Short.parseShort(map.get("height")),
-          map.get("extension")
+      return new FileFrameSequence(
+        map.get("name"),
+        Integer.parseInt(map.get("start")),
+        Integer.parseInt(map.get("end")),
+        Byte.parseByte(map.get("rate")),
+        Short.parseShort(map.get("width")),
+        Short.parseShort(map.get("height")),
+        map.get("extension")
       );
     } catch (NumberFormatException e) {
       throw new BadMetadataException();
@@ -536,12 +535,13 @@ public class FrameSequenceWorker implements SequenceWorker {
    * METADATA_FILE} in the directory pointed by the path of this SequenceWorker
    */
   private Map<String, String> readMetadata(String path) throws IOException {
-    if (!Files.isDirectory(Paths.get(path)))
+    if (!Files.isDirectory(Paths.get(path))) {
       throw new NotDirectoryException(path);
+    }
     String metadata = path + METADATA_FILE;
-
-    if (!Files.exists(Paths.get(metadata)))
+    if (!Files.exists(Paths.get(metadata))) {
       throw new NoSuchFileException(metadata);
+    }
     return new ConfigFileReader(metadata).readToMap();
   }
 
@@ -549,13 +549,15 @@ public class FrameSequenceWorker implements SequenceWorker {
    * Returns a List of the given number of FileFrameLens, each with its own
    * offsets
    */
-  private List<FileFrameLens> makeLenses(String path,
-      FileFrameSequence sequence,
-      byte size) {
+  private List<FileFrameLens> makeLenses(
+    String path,
+    FileFrameSequence sequence,
+    byte size
+  ) {
     List<FileFrameLens> out = new ArrayList<>(size);
-
-    for (byte b = 0; b < size; b++)
+    for (byte b = 0; b < size; b++) {
       out.add(new FileFrameLens(path, sequence, b, (byte) (size - 1)));
+    }
     return out;
   }
 
@@ -575,16 +577,13 @@ public class FrameSequenceWorker implements SequenceWorker {
    */
   private List<OutputSource> makeTracks() throws IOException {
     List<OutputSource> out = new ArrayList<>();
-
     for (int channel = 1; channel <= Byte.MAX_VALUE; channel++) {
       String path = this.path + channel + ".wav";
-
       if (!Files.isRegularFile(Paths.get(path))) {
         out.add(null);
         continue;
       }
       File file = new File(path);
-
       try {
         out.add(new OutputSource(file));
       } catch (UnsupportedAudioFileException e) {
@@ -599,9 +598,11 @@ public class FrameSequenceWorker implements SequenceWorker {
    * SequenceWorker, or null if there are no OutputSources.
    */
   private OutputSource makePilot() {
-    for (OutputSource s : this.tracks)
-      if (s != null)
+    for (OutputSource s : this.tracks) {
+      if (s != null) {
         return s;
+      }
+    }
     return null;
   }
 
@@ -611,21 +612,20 @@ public class FrameSequenceWorker implements SequenceWorker {
    */
   private OutputMixer makeMixer() {
     OutputMixer out;
-
     try {
-      out = this.pilot != null ? new OutputMixer((byte) this.tracks.size(),
-          this.pilot.getFormat()
-      ) : new OutputMixer((byte) 1);
+      out =
+        this.pilot != null
+          ? new OutputMixer((byte) this.tracks.size(), this.pilot.getFormat())
+          : new OutputMixer((byte) 1);
     } catch (IllegalArgumentException e) {
       this.tracks.stream()
-          .filter(Objects::nonNull)
-          .forEach(OutputSource::close);
-
+        .filter(Objects::nonNull)
+        .forEach(OutputSource::close);
       throw e;
     }
     this.tracks.forEach(s -> {
-      out.attach(s);
-    });
+        out.attach(s);
+      });
     out.setSolo((short) 0);
     return out;
   }
@@ -645,9 +645,7 @@ public class FrameSequenceWorker implements SequenceWorker {
    * Sequence of this SequencedWorker
    */
   private SimpleSyncroTimer makeClock() {
-    return new SimpleSyncroTimer(
-        this::update, (short) this.sequence.getRate()
-    );
+    return new SimpleSyncroTimer(this::update, (short) this.sequence.getRate());
   }
 
   /** Returns a new daemon Thread with the given Runnable and name */
@@ -663,9 +661,9 @@ public class FrameSequenceWorker implements SequenceWorker {
    */
   private List<Thread> makeLensThreads() {
     List<Thread> out = new ArrayList<>(this.lenses.size());
-
-    for (byte b = 0; b < this.lenses.size(); b++)
+    for (byte b = 0; b < this.lenses.size(); b++) {
       out.add(makeDaemonThread(this.lenses.get(b), "/Lens[" + b + "]"));
+    }
     return Collections.unmodifiableList(out);
   }
 

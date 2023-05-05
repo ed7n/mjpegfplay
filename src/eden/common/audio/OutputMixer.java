@@ -10,7 +10,7 @@ import javax.sound.sampled.SourceDataLine;
  * SourceDataLine} for a singular audio output. A channel is denoted by an
  * {@code int} indexed from {@code 0}. A dead {@code OutputMixer} does not
  * permit further operations.
- * <p>
+ *
  * This implementation is designed for signed PCM streams. Later versions of
  * this class may include support for unsigned streams.
  *
@@ -21,55 +21,39 @@ public class OutputMixer implements Runnable {
 
   /** Default buffer size in bytes */
   public static final int DEFAULT_BUFFER_SIZE = 4800;
-
   /** Default {@code OutputSource} capacity */
   public static final byte DEFAULT_CHANNELS = 8;
-
   /** Audio data arrangement definition */
   private final AudioFormat format;
-
   /** AudioManipulator whose audio manipulation capabilities are to be used */
   private final AudioManipulator manipulator;
-
   /** Data line to which mixed audio data are to be written */
   private final SourceDataLine line;
-
   /** Audio streams to be read from, manipulated, and mixed altogether. */
   private final OutputSource[] sources;
-
   /** Channel audio manipulation parameters */
   private final ChannelDSPData[] dspData;
-
   /** Master audio manipulation parameters */
   private final ChannelDSPData thisDspData;
-
   /** Duration to sleep the mixing thread in milliseconds */
   private final long napLength;
-
   /** Size per sample in bytes */
   private final byte bytes;
-
   /** Exception defining the death of this OutputMixer */
   private Exception deathCause;
-
   /** Read audio data to be manipulated then mixed into bufferMixd */
   private byte[] bufferRead;
-
   /** Mixed audio data to be written to line */
   private byte[] bufferMixd;
-
   /** Next channel to be pointed by channel-searching methods */
   private int sourcesIndex;
-
   /**
    * Indicates both whether this OutputMixer is at solo mode, and the channel to
    * isolate during so.
    */
   private short solo;
-
   /** Indicates whether the operations of this OutputMixer are paused */
   private boolean hold;
-
   /**
    * Indicates whether the SourceDataLine was thrown a LineUnavailableException,
    * preventing further operations.
@@ -113,23 +97,28 @@ public class OutputMixer implements Runnable {
    * be used.
    */
   public OutputMixer(byte channels, AudioFormat format, int bufferSize) {
-    if (bufferSize <= 0 || bufferSize % 48 != 0)
+    if (bufferSize <= 0 || bufferSize % 48 != 0) {
       bufferSize -= bufferSize % 48;
-    if (channels <= 0)
+    }
+    if (channels <= 0) {
       channels = DEFAULT_CHANNELS;
+    }
     this.format = format;
-
-    this.manipulator = new AudioManipulator(
-        (byte) (format.getSampleSizeInBits()), format.isBigEndian()
-    );
+    this.manipulator =
+      new AudioManipulator(
+        (byte) (format.getSampleSizeInBits()),
+        format.isBigEndian()
+      );
     this.line = makeLine();
     this.sources = new OutputSource[channels];
     this.dspData = makeDSPData();
     this.thisDspData = new ChannelDSPData();
-
-    this.napLength = (long) Math.ceil(500 * (double) bufferSize / (format
-        .getFrameSize() * format.getFrameRate())
-    );
+    this.napLength =
+      (long) Math.ceil(
+        500 *
+        (double) bufferSize /
+        (format.getFrameSize() * format.getFrameRate())
+      );
     this.bytes = (byte) (format.getFrameSize() / format.getChannels());
     this.deathCause = null;
     this.solo = -1;
@@ -145,30 +134,31 @@ public class OutputMixer implements Runnable {
    * manipulating and mixing audio data from its {@code OutputSources} into its
    * {@code SourceDataLine}.
    */
+  @Override
   public void run() {
-    if (this.dead)
+    if (this.dead) {
       return;
+    }
     int channel;
     int solo;
     boolean mute;
     this.line.start();
-
     while (!Thread.currentThread().isInterrupted() && !this.dead) {
       solo = this.solo;
       mute = this.thisDspData.isMuted();
       checkHold();
-
       for (channel = 0; channel < this.sources.length; channel++) {
-        if (this.sources[channel] == null || this.sources[channel].isDone())
+        if (this.sources[channel] == null || this.sources[channel].isDone()) {
           continue;
+        }
         if (this.dspData[channel].isMuted() || (solo >= 0 && channel != solo)) {
           this.sources[channel].skip(this.bufferRead.length);
           continue;
         }
         this.sources[channel].read(this.bufferRead);
-
-        if (!mute)
+        if (!mute) {
           manipulate(channel);
+        }
       }
       manipulate();
       checkLine();
@@ -194,9 +184,9 @@ public class OutputMixer implements Runnable {
    */
   public int attach(OutputSource source) {
     int channel = getFreeChannel();
-
-    if (channel < 0)
+    if (channel < 0) {
       return channel;
+    }
     try {
       attach(source, channel);
       return channel;
@@ -220,12 +210,12 @@ public class OutputMixer implements Runnable {
    * @throws ChannelNotFreeException If the given channel is currently attached
    * to an existing {@code OutputSource}
    */
-  public void attach(OutputSource source, int channel) throws
-      IndexOutOfBoundsException,
-      ChannelNotFreeException {
+  public void attach(OutputSource source, int channel)
+    throws IndexOutOfBoundsException, ChannelNotFreeException {
     validateChannel(channel);
-    if (this.sources[channel] != null)
+    if (this.sources[channel] != null) {
       throw new ChannelNotFreeException(channel);
+    }
     this.sources[channel] = source;
   }
 
@@ -246,7 +236,7 @@ public class OutputMixer implements Runnable {
    * @throws IndexOutOfBoundsException If the given channel is out of range
    */
   public OutputSource attachAndReplace(OutputSource source, int channel)
-      throws IndexOutOfBoundsException {
+    throws IndexOutOfBoundsException {
     validateChannel(channel);
     OutputSource out = this.sources[channel];
     this.sources[channel] = source;
@@ -262,17 +252,18 @@ public class OutputMixer implements Runnable {
   public OutputSource detach(int channel) throws IndexOutOfBoundsException {
     validateChannel(channel);
     OutputSource out = getChannel(channel);
-
-    if (out == null)
+    if (out == null) {
       return null;
+    }
     this.sources[channel] = null;
     return out;
   }
 
   /** Detaches all {@code OutputSources} from this {@code OutputMixer} */
   public void detachAll() {
-    for (int i = 0; i < this.sources.length; i++)
+    for (int i = 0; i < this.sources.length; i++) {
       this.sources[i] = null;
+    }
   }
 
   /**
@@ -280,9 +271,11 @@ public class OutputMixer implements Runnable {
    * starting positions
    */
   public void rewindAll() {
-    for (OutputSource s : this.sources)
-      if (s != null)
+    for (OutputSource s : this.sources) {
+      if (s != null) {
         s.jumpToStart();
+      }
+    }
   }
 
   /**
@@ -290,8 +283,9 @@ public class OutputMixer implements Runnable {
    * OutputMixer}
    */
   public void resetAllDSP() {
-    for (ChannelDSPData d : this.dspData)
+    for (ChannelDSPData d : this.dspData) {
       d.reset();
+    }
   }
 
   /**
@@ -314,9 +308,9 @@ public class OutputMixer implements Runnable {
    */
   public int getFreeChannel() {
     int out = nextChannel(this.sourcesIndex, true);
-
-    if (out >= 0)
+    if (out >= 0) {
       this.sourcesIndex = (out + 1) % this.sources.length;
+    }
     return out;
   }
 
@@ -330,9 +324,9 @@ public class OutputMixer implements Runnable {
    */
   public int getAttachedChannel() {
     int out = nextChannel(this.sourcesIndex, false);
-
-    if (out >= 0)
+    if (out >= 0) {
       this.sourcesIndex = (out + 1) % this.sources.length;
+    }
     return out;
   }
 
@@ -373,8 +367,8 @@ public class OutputMixer implements Runnable {
    *
    * @throws IndexOutOfBoundsException If the given channel is out of range
    */
-  public ChannelDSPData getDspData(int channel) throws
-      IndexOutOfBoundsException {
+  public ChannelDSPData getDspData(int channel)
+    throws IndexOutOfBoundsException {
     validateChannel(channel);
     return this.dspData[channel];
   }
@@ -470,8 +464,9 @@ public class OutputMixer implements Runnable {
 
   /** Throws an IndexOutOfBoundsException if the given channel is invalid */
   private void validateChannel(int channel) throws IndexOutOfBoundsException {
-    if (!isValidChannel(channel))
+    if (!isValidChannel(channel)) {
       throw new IndexOutOfBoundsException(Integer.toString(channel));
+    }
   }
 
   /**
@@ -479,12 +474,14 @@ public class OutputMixer implements Runnable {
    */
   private int nextChannel(int from, boolean free) {
     int i = from;
-
-    do
-      if ((free && this.sources[i % this.sources.length] == null) || (!free
-          && this.sources[i % this.sources.length] != null))
+    do {
+      if (
+        (free && this.sources[i % this.sources.length] == null) ||
+        (!free && this.sources[i % this.sources.length] != null)
+      ) {
         return i % this.sources.length;
-    while (++i % this.sources.length != from);
+      }
+    } while (++i % this.sources.length != from);
     return -1;
   }
 
@@ -495,7 +492,6 @@ public class OutputMixer implements Runnable {
   private synchronized void checkHold() {
     while (this.hold) {
       this.line.flush();
-
       try {
         wait();
       } catch (InterruptedException e) {
@@ -510,9 +506,10 @@ public class OutputMixer implements Runnable {
    * different operating systems, audio hardware, and/or software systems.
    */
   private void checkLine() {
-    while (this.line.available() < (this.line.getBufferSize()
-        - this.bufferMixd.length))
-      try {
+    while (
+      this.line.available() <
+      (this.line.getBufferSize() - this.bufferMixd.length)
+    ) try {
       Thread.sleep(this.napLength);
     } catch (InterruptedException e) {
       return;
@@ -522,21 +519,23 @@ public class OutputMixer implements Runnable {
   /** Manipulates the mixed audio data in bufferMixd */
   private void manipulate() {
     long sampleMixd;
-
-    for (int i = 0;
-        i + this.bytes <= this.bufferMixd.length;
-        i += this.bytes) {
-      sampleMixd = this.manipulator.bytesToInt(
-          this.bufferMixd, i,
-          this.format.isBigEndian()
-      );
-      sampleMixd = this.manipulator.amplify(
-          sampleMixd,
-          this.thisDspData.getAmplification()
-      );
+    for (int i = 0; i + this.bytes <= this.bufferMixd.length; i += this.bytes) {
+      sampleMixd =
+        this.manipulator.bytesToInt(
+            this.bufferMixd,
+            i,
+            this.format.isBigEndian()
+          );
+      sampleMixd =
+        this.manipulator.amplify(
+            sampleMixd,
+            this.thisDspData.getAmplification()
+          );
       this.manipulator.intToBytes(
-          this.bufferMixd, this.manipulator.clip(sampleMixd), i
-      );
+          this.bufferMixd,
+          this.manipulator.clip(sampleMixd),
+          i
+        );
     }
   }
 
@@ -546,26 +545,30 @@ public class OutputMixer implements Runnable {
   private void manipulate(int channel) {
     long sampleRead;
     long sampleMixd;
-
-    for (int i = 0;
-        i + this.bytes <= this.bufferRead.length;
-        i += this.bytes) {
-      sampleRead = this.manipulator.bytesToInt(
-          this.bufferRead, i,
-          this.sources[channel].getFormat().isBigEndian()
-      );
-      sampleMixd = this.manipulator.bytesToInt(
-          this.bufferMixd, i, this.format.isBigEndian()
-      );
-      sampleRead = this.manipulator.amplify(
-          sampleRead,
-          this.dspData[channel].getAmplification()
-      );
+    for (int i = 0; i + this.bytes <= this.bufferRead.length; i += this.bytes) {
+      sampleRead =
+        this.manipulator.bytesToInt(
+            this.bufferRead,
+            i,
+            this.sources[channel].getFormat().isBigEndian()
+          );
+      sampleMixd =
+        this.manipulator.bytesToInt(
+            this.bufferMixd,
+            i,
+            this.format.isBigEndian()
+          );
+      sampleRead =
+        this.manipulator.amplify(
+            sampleRead,
+            this.dspData[channel].getAmplification()
+          );
       sampleMixd = this.manipulator.mix(sampleRead, sampleMixd);
-
       this.manipulator.intToBytes(
-          this.bufferMixd, this.manipulator.clip(sampleMixd), i
-      );
+          this.bufferMixd,
+          this.manipulator.clip(sampleMixd),
+          i
+        );
     }
   }
 
@@ -578,18 +581,18 @@ public class OutputMixer implements Runnable {
   /** Makes an array of initialized ChannelDSPData */
   private ChannelDSPData[] makeDSPData() {
     ChannelDSPData[] out = new ChannelDSPData[this.sources.length];
-
-    for (byte b = 0; b < out.length; b++)
+    for (byte b = 0; b < out.length; b++) {
       out[b] = new ChannelDSPData();
+    }
     return out;
   }
 
   /** Makes an array of zero bytes */
   private byte[] makeZeroBytes(int bufferSize) {
     byte[] out = new byte[bufferSize];
-
-    for (bufferSize--; bufferSize >= 0; bufferSize--)
+    for (bufferSize--; bufferSize >= 0; bufferSize--) {
       out[bufferSize] = 0;
+    }
     return out;
   }
 

@@ -1,7 +1,6 @@
 package eden.common.io.active;
 
 import eden.common.model.sequence.FileFrameSequence;
-
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
@@ -22,10 +21,8 @@ public class FileImageLens extends ReadAheadLens<Image> {
 
   /** Path to working directory */
   private final String path;
-
   /** Working Sequence */
   private final FileFrameSequence sequence;
-
   /**
    * Indicates whether this FileImageLens is signalled for a change in behavior
    */
@@ -43,9 +40,11 @@ public class FileImageLens extends ReadAheadLens<Image> {
    * Makes a {@code FileImageLens} with the given path, {@code
    * FileFrameSequence}, and buffer capacity in number of {@code Images}.
    */
-  public FileImageLens(String path,
-      FileFrameSequence sequence,
-      short capacity) {
+  public FileImageLens(
+    String path,
+    FileFrameSequence sequence,
+    short capacity
+  ) {
     super(capacity);
     this.path = path;
     this.sequence = sequence;
@@ -53,22 +52,24 @@ public class FileImageLens extends ReadAheadLens<Image> {
   }
 
   /** Runs this {@code FileImageLens} */
+  @Override
   public void run() {
-    if (this.dead.get())
+    if (this.dead.get()) {
       return;
+    }
     try {
       while (!Thread.currentThread().isInterrupted()) {
         int skip = this.sequence.getSkip();
         int frame = this.sequence.getPoint();
-
         while (!Thread.currentThread().isInterrupted() && !this.dead.get()) {
           if (this.call.get()) {
             reset();
             break;
           }
-          if ((this.buffer.size() >= this.capacity) || !this.sequence
-              .isValidPoint(frame))
-            try {
+          if (
+            (this.buffer.size() >= this.capacity) ||
+            !this.sequence.isValidPoint(frame)
+          ) try {
             synchronized (this) {
               wait();
             }
@@ -80,9 +81,11 @@ public class FileImageLens extends ReadAheadLens<Image> {
             break;
           }
           try {
-            add(ImageIO.read(new File(
-                this.path + frame + "." + this.sequence.getExtension()
-            )));
+            add(
+              ImageIO.read(
+                new File(this.path + frame + "." + this.sequence.getExtension())
+              )
+            );
           } catch (IIOException e) {
             add(null);
           }
@@ -97,7 +100,6 @@ public class FileImageLens extends ReadAheadLens<Image> {
   /** Signals this {@code FileImageLens} for a change in behavior */
   public void call() {
     this.call.set(true);
-
     synchronized (this) {
       notifyAll();
     }
@@ -106,10 +108,10 @@ public class FileImageLens extends ReadAheadLens<Image> {
   /** Awaits this {@code FileImageLens} for a change in behavior */
   public synchronized void await() {
     try {
-      while (this.call.get() || this.buffer.isEmpty())
+      while (this.call.get() || this.buffer.isEmpty()) {
         wait();
-    } catch (InterruptedException e) {
-    }
+      }
+    } catch (InterruptedException e) {}
   }
 
   /** Resets the buffering operation */

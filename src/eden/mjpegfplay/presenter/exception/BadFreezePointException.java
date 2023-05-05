@@ -1,5 +1,7 @@
 package eden.mjpegfplay.presenter.exception;
 
+import static eden.common.shared.Constants.EOL;
+
 /**
  * A {@code BadFreezePointException} indicates that a freezing point is either
  * not greater or equal to the previous point, or is outside the range of points
@@ -17,11 +19,13 @@ public class BadFreezePointException extends MalformedSequenceException {
    */
   public BadFreezePointException(int freezePoint) {
     super(
-        "Freezing point: " + freezePoint,
-        "This freezing point is either smaller than the previous point, or that it\n"
-        + "is outside the bounds of its sequence.",
-        "Check the sequence metadata file and correct this and any other offending\n"
-        + "freezing points."
+      "Freezing point: " + freezePoint,
+      "This freezing point is either smaller than the previous point, or that it is" +
+      EOL +
+      "outside the bounds of its sequence.",
+      "Check the sequence metadata file and correct this and any other offending" +
+      EOL +
+      "freezing points."
     );
   }
 }

@@ -12,7 +12,6 @@ import java.util.List;
  * @version u0r5, 11/05/2018.
  */
 public interface IndexedFileReader extends FileWorker {
-
   /**
    * Reads data from a file at the given entry index
    *
@@ -30,11 +29,8 @@ public interface IndexedFileReader extends FileWorker {
    * @throws EOFException If the end of file is reached unexpectedly while
    * reading a value
    */
-  String read(int index) throws
-      IllegalArgumentException,
-      IOException,
-      IndexOutOfBoundsException;
-
+  String read(int index)
+    throws IllegalArgumentException, IOException, IndexOutOfBoundsException;
   /**
    * Reads all data from a file to a {@code List}
    *

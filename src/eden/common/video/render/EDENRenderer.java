@@ -1,7 +1,6 @@
 package eden.common.video.render;
 
 import eden.common.video.CSSColor;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -20,7 +19,7 @@ import java.util.Objects;
  * RendererComponent} that calls its draw method. Optionally, it can keep a
  * {@code List} of {@code RendererComponents} so that it knows to apply
  * operations specific to each.
- * <p>
+ *
  * Two {@code EDENRenderer} with the same name are equal, regardless of the
  * {@code RendererComponents} held by each.
  *
@@ -31,7 +30,6 @@ public abstract class EDENRenderer {
 
   /** Font with which to draw render statistics */
   protected static final Font FONT;
-
   /** Font background Color */
   protected static final Color COLOR = new Color(15, 3, 0);
 
@@ -46,13 +44,10 @@ public abstract class EDENRenderer {
 
   /** Identification */
   protected final String name;
-
   /** RendererComponents to which this EDENRenderer paints */
   protected final List<RendererComponent> components;
-
   /** Unix epoch when the last draw occurred */
   protected long time;
-
   /** Indicates whether render statistics are to be drawn */
   protected boolean drawStatistics;
 
@@ -107,8 +102,9 @@ public abstract class EDENRenderer {
 
   /** Adds the given {@code RendererComponent} to this {@code EDENRenderer} */
   public void addComponent(RendererComponent component) {
-    if (component == null)
+    if (component == null) {
       return;
+    }
     this.components.add(component);
   }
 
@@ -153,8 +149,10 @@ public abstract class EDENRenderer {
   /** {@inheritDoc} */
   @Override
   public boolean equals(Object o) {
-    return o == this || (o != null && o.getClass() == getClass() && equals(
-        (EDENRenderer) o));
+    return (
+      o == this ||
+      (o != null && o.getClass() == getClass() && equals((EDENRenderer) o))
+    );
   }
 
   /** {@inheritDoc} */

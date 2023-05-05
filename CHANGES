@@ -2,6 +2,20 @@ mJPEGfPlay: Changes
 
 —Update 0
 
+——Revision 5, 05/05/2023.
+- `Set Lens Count`.
+- Fixed code inspection warnings where sensible.
+  - NetBeans 17.
+- Formatted code with Prettier.
+- Moved `Open` to `Load`.
+- Refactored supplementary scripts.
+- Removed `Save`.
+- Updated code and presentation styles where sensible.
+- Updated console interface.
+  - `Load Music Sequence`.
+  - Append directory separator when opening.
+  - Removed braces around transport icons.
+
 ——Revision 4, 11/06/2021.
 - Both front panel text rows lean left.
 - Fixed audio engine memory leak.

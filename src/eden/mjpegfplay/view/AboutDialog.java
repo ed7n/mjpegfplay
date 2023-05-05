@@ -1,32 +1,41 @@
 package eden.mjpegfplay.view;
 
+import static eden.common.shared.Constants.EOL;
+import static eden.common.shared.Constants.SPACE;
+import static eden.mjpegfplay.model.ApplicationInformation.*;
+
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-
-import static eden.mjpegfplay.model.ApplicationInformation.*;
 
 /**
  * An AboutDialog shows information about this application.
  *
  * @author Brendon
- * @version u0r3, 11/28/2018.
+ * @version u0r5, 05/05/2023.
  */
 class AboutDialog {
 
   /** Message pane */
   private final JOptionPane pane = new JOptionPane(
-      APPLICATION_NAME + "\n" + APPLICATION_DESCRIPTION + "\n\n"
-      + APPLICATION_VERSION_LONG + " by Brendon, " + APPLICATION_DATE
-      + ".      \n\n" + APPLICATION_URL + "\n\n"
-      + "This project was originally part of UBC CPSC210-2018W-T1. As such, I'd   \n"
-      + "like to thank all instructors and TAs who took part of this course during\n"
-      + "that time, especially the ones who gave me directions on designing this  \n"
-      + "multi-threaded craziness . . .\n\n. . . it sure is very rewarding after"
-      + " seeing that its end result is working.",
-      JOptionPane.INFORMATION_MESSAGE
+    APPLICATION_NAME +
+    SPACE +
+    APPLICATION_VERSION +
+    " by Brendon, " +
+    APPLICATION_DATE +
+    "." +
+    EOL +
+    "—" +
+    APPLICATION_DESCRIPTION +
+    SPACE +
+    APPLICATION_URL +
+    EOL +
+    EOL +
+    "This project was originally part of UBC CPSC210-2018W-T1. As such, I'd like to" +
+    EOL +
+    "thank all instructors and teaching assistants who took part of that course.",
+    JOptionPane.INFORMATION_MESSAGE
   );
-
   /** Dialog Container */
   private final JDialog dialog;
 

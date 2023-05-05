@@ -1,7 +1,8 @@
 package eden.mjpegfplay.view;
 
-import eden.mjpegfplay.presenter.exception.MalformedSequenceException;
+import static eden.common.shared.Constants.EOL;
 
+import eden.mjpegfplay.presenter.exception.MalformedSequenceException;
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 import javax.swing.JOptionPane;
@@ -28,7 +29,10 @@ class ApplicationMessenger {
     this.ui.frontPanel.setGui(true);
     this.ui.frontPanel.call();
     JOptionPane.showMessageDialog(
-        this.ui.frameMain, message, title, JOptionPane.INFORMATION_MESSAGE
+      this.ui.frameMain,
+      message,
+      title,
+      JOptionPane.INFORMATION_MESSAGE
     );
     if (!this.ui.modal) {
       this.ui.frontPanel.setGui(false);
@@ -40,7 +44,10 @@ class ApplicationMessenger {
     this.ui.frontPanel.setGui(true);
     this.ui.frontPanel.call();
     JOptionPane.showMessageDialog(
-        this.ui.frameMain, message, title, JOptionPane.WARNING_MESSAGE
+      this.ui.frameMain,
+      message,
+      title,
+      JOptionPane.WARNING_MESSAGE
     );
     if (!this.ui.modal) {
       this.ui.frontPanel.setGui(false);
@@ -52,7 +59,10 @@ class ApplicationMessenger {
     this.ui.frontPanel.setGui(true);
     this.ui.frontPanel.call();
     JOptionPane.showMessageDialog(
-        this.ui.frameMain, message, title, JOptionPane.ERROR_MESSAGE
+      this.ui.frameMain,
+      message,
+      title,
+      JOptionPane.ERROR_MESSAGE
     );
     if (!this.ui.modal) {
       this.ui.frontPanel.setGui(false);
@@ -62,18 +72,29 @@ class ApplicationMessenger {
 
   void sayMalformedSequenceException(MalformedSequenceException e) {
     sayError(
-        "Malformed Sequence Error",
-        "Subject:\n" + e.getSubject() + "\n\nProblem:\n" + e.getProblem()
-        + "\n\nRemedy: \n" + e.getRemedy()
+      "Malformed Sequence Error",
+      "Subject:" +
+      EOL +
+      e.getSubject() +
+      EOL +
+      EOL +
+      "Problem:" +
+      EOL +
+      e.getProblem() +
+      EOL +
+      EOL +
+      "Remedy: " +
+      EOL +
+      e.getRemedy()
     );
   }
 
   int askInteger(String title, String message) {
     try {
       String in = askString(title, message);
-
-      if (in == null)
+      if (in == null) {
         return Integer.MIN_VALUE;
+      }
       return Integer.parseInt(in);
     } catch (NumberFormatException e) {
       sayError("Input Error", "Invalid integer.");
@@ -84,9 +105,11 @@ class ApplicationMessenger {
   String askString(String title, String message) {
     this.ui.frontPanel.setGui(true);
     this.ui.frontPanel.call();
-
     String out = JOptionPane.showInputDialog(
-        this.ui.frameMain, message, title, JOptionPane.QUESTION_MESSAGE
+      this.ui.frameMain,
+      message,
+      title,
+      JOptionPane.QUESTION_MESSAGE
     );
     if (!this.ui.modal) {
       this.ui.frontPanel.setGui(false);
@@ -96,24 +119,28 @@ class ApplicationMessenger {
   }
 
   void sayException(Exception e) {
+    if (e == null) {
+      return;
+    }
     String title, message = null;
-
     if (e instanceof NumberFormatException) {
       title = "Number Format Error";
       message = "A numerical parameter is incorrectly formatted.";
-    } else if (e instanceof IOException)
+    } else if (e instanceof IOException) {
       title = "I/O Error";
-    else
+    } else {
       title = "Error";
+    }
     if (message != null) {
       sayError(title, message);
       return;
     }
-    if (e instanceof NoSuchFileException)
-      message = "The metadata file can not be found or opened.\n" + e
-          .getMessage();
-    else
-      message = "An unrecognized error was thrown:\n" + e.toString();
+    if (e instanceof NoSuchFileException) {
+      message =
+        "The metadata file can not be found or opened." + EOL + e.getMessage();
+    } else {
+      message = "An unrecognized error was thrown:" + EOL + e.toString();
+    }
     sayError(title, message);
   }
 }

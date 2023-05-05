@@ -1,12 +1,11 @@
 package eden.mjpegfplay.view;
 
 import eden.common.video.CSSColor;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics2D;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.font.TextAttribute;
@@ -18,7 +17,7 @@ import javax.swing.JComponent;
 
 /**
  * A {@code BackdropComponent} holds and draws the application backdrop image.
- * <p>
+ *
  * This class follows the singleton design pattern, because all {@code
  * BackdropComponents} are equal anyways.
  *
@@ -29,10 +28,8 @@ class BackdropComponent extends JComponent {
 
   /** Singleton instance */
   static final BackdropComponent INSTANCE = new BackdropComponent();
-
   /** Font to draw render information with */
   private static final Font FONT;
-
   /** Font background Color */
   private static final Color COLOR = new Color(15, 3, 0);
 
@@ -47,33 +44,26 @@ class BackdropComponent extends JComponent {
 
   /** Backdrop Image */
   private final Image image;
-
   /** Rendering Dimension in pixels */
   private final Dimension dimension;
-
   /** Rendering aspect ratio */
   private final double ratio;
-
   /** Indicates whether render statistics are to be drawn */
   private boolean drawStatistics;
 
   /** Makes a BackdropComponent */
   private BackdropComponent() {
     Image image;
-
     try {
-      image = ImageIO.read(getClass().getResource("/res/BACKDROP.JPG"));
+      image = ImageIO.read(getClass().getResource("/res/backdrop.jpg"));
     } catch (IOException e) {
       throw new RuntimeException(
-          "The application backdrop image file can not be read: " + e.toString(),
-          e
+        "The application backdrop image file can not be read: " + e.toString(),
+        e
       );
     }
     this.image = image;
-
-    this.dimension = new Dimension(
-        image.getWidth(null), image.getHeight(null)
-    );
+    this.dimension = new Dimension(image.getWidth(null), image.getHeight(null));
     this.ratio = (double) image.getWidth(null) / image.getHeight(null);
     this.drawStatistics = false;
   }
@@ -87,7 +77,6 @@ class BackdropComponent extends JComponent {
     Graphics2D g2 = (Graphics2D) g.create();
     int width;
     int height;
-
     if (getParent().getHeight() * this.ratio >= getParent().getWidth()) {
       width = getParent().getWidth();
       height = (int) Math.round(width / this.ratio);
@@ -96,25 +85,39 @@ class BackdropComponent extends JComponent {
       width = (int) Math.round(height * this.ratio);
     }
     g2.setRenderingHint(
-        RenderingHints.KEY_INTERPOLATION,
-        RenderingHints.VALUE_INTERPOLATION_BICUBIC
+      RenderingHints.KEY_INTERPOLATION,
+      RenderingHints.VALUE_INTERPOLATION_BICUBIC
     );
-    g2.drawImage(this.image,
-        (int) Math.round(((double) getParent().getWidth() / 2) - ((double) width
-            / 2)),
-        (int) Math.round(((double) getParent().getHeight() / 2)
-            - ((double) height / 2)
-        ),
-        width, height, null
+    g2.drawImage(
+      this.image,
+      (int) Math.round(
+        ((double) getParent().getWidth() / 2) - ((double) width / 2)
+      ),
+      (int) Math.round(
+        ((double) getParent().getHeight() / 2) - ((double) height / 2)
+      ),
+      width,
+      height,
+      null
     );
     if (this.drawStatistics) {
       g2.setFont(FONT);
-
       g2.drawString(
-          "Space: " + getParent().getWidth() + "×" + getParent().getHeight()
-          + "  Output: " + width + "×" + height + "  Source: " + this.image
-              .getWidth(null) + "×" + this.image.getHeight(null),
-          1, 13);
+        "Space: " +
+        getParent().getWidth() +
+        "×" +
+        getParent().getHeight() +
+        "  Output: " +
+        width +
+        "×" +
+        height +
+        "  Source: " +
+        this.image.getWidth(null) +
+        "×" +
+        this.image.getHeight(null),
+        1,
+        13
+      );
     }
   }
 

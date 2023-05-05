@@ -5,10 +5,10 @@ import java.util.Objects;
 /**
  * A {@code Sequence} represents anything identifiable that has a finite
  * sequential nature.
- * <p>
+ *
  * "Things go from A to B to C, calling it a story changes nothing. It's just a
  * sequence. That's all it is."
- * <p>
+ *
  * Points of a {@code Sequence} are represented as {@code ints}.
  *
  * @author Brendon
@@ -18,19 +18,14 @@ public class Sequence {
 
   /** Sequence name */
   protected final String name;
-
   /** Starting point */
   protected final int start;
-
   /** Ending point */
   protected final int end;
-
   /** Number of steps to advance per second */
   protected final int rate;
-
   /** Current point */
   protected int point;
-
   /** Number of points to advance per step */
   protected int skip;
 
@@ -59,12 +54,14 @@ public class Sequence {
    *
    * @param point Current point
    */
-  public Sequence(String name,
-      int start,
-      int end,
-      int rate,
-      int skip,
-      int point) {
+  public Sequence(
+    String name,
+    int start,
+    int end,
+    int rate,
+    int skip,
+    int point
+  ) {
     this.name = name;
     this.start = start;
     this.end = end;
@@ -91,8 +88,9 @@ public class Sequence {
    * {@code true} If the operation is successful
    */
   public boolean advance() {
-    if (!isValidPoint(this.point + this.skip))
+    if (!isValidPoint(this.point + this.skip)) {
       return false;
+    }
     this.point += this.skip;
     return true;
   }
@@ -174,8 +172,9 @@ public class Sequence {
    * {@code true} If the operation is successful
    */
   public boolean setPoint(int point) {
-    if (!isValidPoint(point))
+    if (!isValidPoint(point)) {
       return false;
+    }
     this.point = point;
     return true;
   }
@@ -193,8 +192,10 @@ public class Sequence {
   /** {@inheritDoc} */
   @Override
   public boolean equals(Object o) {
-    return o == this || (o != null && o.getClass() == getClass() && equals(
-        (Sequence) o));
+    return (
+      o == this ||
+      (o != null && o.getClass() == getClass() && equals((Sequence) o))
+    );
   }
 
   /** {@inheritDoc} */
@@ -205,7 +206,12 @@ public class Sequence {
 
   /** Returns whether the given {@code Sequence} is equivalent to this */
   public boolean equals(Sequence s) {
-    return s != null && s.name.equals(this.name) && s.start == this.start
-        && s.end == this.end && s.rate == this.rate;
+    return (
+      s != null &&
+      s.name.equals(this.name) &&
+      s.start == this.start &&
+      s.end == this.end &&
+      s.rate == this.rate
+    );
   }
 }

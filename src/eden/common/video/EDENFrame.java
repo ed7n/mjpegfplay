@@ -13,7 +13,6 @@ public class EDENFrame {
 
   /** Image object */
   private final Image image;
-
   /** Image identifier */
   private final int identifier;
 
@@ -44,8 +43,10 @@ public class EDENFrame {
   /** {@inheritDoc} */
   @Override
   public boolean equals(Object o) {
-    return o == this || (o != null && o.getClass() == getClass() && equals(
-        (EDENFrame) o));
+    return (
+      o == this ||
+      (o != null && o.getClass() == getClass() && equals((EDENFrame) o))
+    );
   }
 
   /** {@inheritDoc} */
@@ -56,7 +57,8 @@ public class EDENFrame {
 
   /** Returns whether the given {@code Frame} is equivalent to this */
   public boolean equals(EDENFrame f) {
-    return f != null && f.image.equals(this.image) && f.identifier
-        == this.identifier;
+    return (
+      f != null && f.image.equals(this.image) && f.identifier == this.identifier
+    );
   }
 }

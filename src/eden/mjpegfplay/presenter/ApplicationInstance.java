@@ -1,79 +1,69 @@
 package eden.mjpegfplay.presenter;
 
+import static eden.common.shared.Constants.NUL_STRING;
+import static eden.mjpegfplay.model.ApplicationInformation.*;
+import static eden.mjpegfplay.model.SequenceTypes.*;
+import static eden.mjpegfplay.model.TransportConstants.*;
+
+import eden.common.io.ConfigFileReader;
+import eden.common.io.ConfigFileWriter;
+import eden.common.io.MappedFileReader;
+import eden.common.io.MappedFileWriter;
 import eden.mjpegfplay.presenter.worker.FrameSequenceWorker;
 import eden.mjpegfplay.presenter.worker.FreezingFrameSequenceWorker;
 import eden.mjpegfplay.presenter.worker.MusicPlaylistWorker;
 import eden.mjpegfplay.presenter.worker.SequenceWorker;
 import eden.mjpegfplay.view.ApplicationUI;
 import eden.mjpegfplay.view.ApplicationUIMaker;
-
-import eden.common.io.ConfigFileReader;
-import eden.common.io.ConfigFileWriter;
-import eden.common.io.MappedFileReader;
-import eden.common.io.MappedFileWriter;
 import eden.mjpegfplay.view.FrontPanelInterface;
-
 import java.util.HashMap;
 import java.util.Map;
-
-import static eden.mjpegfplay.model.ApplicationInformation.*;
-import static eden.mjpegfplay.model.SequenceTypes.*;
-import static eden.mjpegfplay.model.TransportConstants.*;
 
 /**
  * An {@code ApplicationInstance} represents an instance of this application. It
  * manages retrievals, presentations, modifications, and storage of end user
  * data, and provides a high-level interface to the application workers.
- * <p>
+ *
  * As such, some method documentations for this class are intended for the end
  * user.
- * <p>
+ *
  * This class represents the presenter in the model-view-presenter architectural
  * pattern of this application.
  *
  * @author Brendon
- * @version u0r3, 11/28/2018.
+ * @version u0r5, 05/05/2023.
  */
 public class ApplicationInstance implements Presenter {
 
   /** Metadata filename */
   public static final String METADATA_FILE = "metadata.edencfg";
-
   /** Application worker */
   private SequenceWorker worker = null;
-
   /** Application user interface */
-  private ApplicationUI ui = new ApplicationUIMaker(this);
-
+  private final ApplicationUI ui = new ApplicationUIMaker(this);
   /** Status display panel */
-  private FrontPanelInterface panel = this.ui.getFrontPanel();
-
+  private final FrontPanelInterface panel = this.ui.getFrontPanel();
   /** EDEN configuration file reader */
-  private MappedFileReader reader = new ConfigFileReader();
-
+  private final MappedFileReader reader = new ConfigFileReader();
   /** EDEN configuration file writer */
-  private MappedFileWriter writer = new ConfigFileWriter();
-
+  private final MappedFileWriter writer = new ConfigFileWriter();
   /** Current sequence data */
   private Map<String, String> map = new HashMap<>();
-
   /** Type of application worker */
   private String type = null;
-
   /**
    * Indicates whether changes to the currently loaded sequence are not yet
    * saved to non-volatile memory
    */
   private boolean modified = false;
-
   /** Volume level */
   private float amplification = 1.0f;
-
   /** Indicates whether the audio output is muted */
   private boolean muted = false;
-
   /** Indicates whether render statistics are to be drawn */
   private boolean drawStatistics = false;
+  /** Count of {@code FileFrameLenses} */
+  private byte lensCount = FrameSequenceWorker.DEFAULT_LENSES;
 
   /** Makes a new instance of this application */
   public ApplicationInstance() {
@@ -81,14 +71,15 @@ public class ApplicationInstance implements Presenter {
   }
 
   /** Makes a new sequence with the given properties */
-  public void make(String path,
-      String name,
-      int start,
-      int end,
-      int rate,
-      short width,
-      short height)
-      throws Exception {
+  public void make(
+    String path,
+    String name,
+    int start,
+    int end,
+    int rate,
+    short width,
+    short height
+  ) throws Exception {
     this.panel.setWait(true);
     this.panel.call();
     setName(name);
@@ -109,11 +100,9 @@ public class ApplicationInstance implements Presenter {
     this.panel.setWait(true);
     this.panel.paint();
     SequenceWorker worker = this.worker;
-
     try {
       this.worker = makeWorker(path, type);
       setUserData();
-
       if (worker != null) {
         worker.dismiss();
         this.ui.returnToStandby();
@@ -129,8 +118,9 @@ public class ApplicationInstance implements Presenter {
       throw e;
     }
     this.ui.initializePresentation(
-        this.map.get("name"), this.worker.getComponent()
-    );
+        this.map.get("name"),
+        this.worker.getComponent()
+      );
     this.panel.setWait(false);
     this.panel.call();
   }
@@ -139,7 +129,6 @@ public class ApplicationInstance implements Presenter {
   public void save() throws Exception {
     this.panel.setWait(true);
     this.panel.call();
-
     try {
       this.writer.write(this.map);
       this.modified = false;
@@ -163,13 +152,15 @@ public class ApplicationInstance implements Presenter {
   public void close() {
     this.panel.setWait(true);
     this.panel.call();
-    this.worker.dismiss();
-    this.worker = null;
+    if (this.worker != null) {
+      this.worker.dismiss();
+      this.worker = null;
+    }
     this.map.clear();
     this.modified = false;
     this.ui.returnToStandby();
     this.panel.setFromMode(CLOSE);
-    this.panel.setText0("");
+    this.panel.setText0(NUL_STRING);
     this.panel.setText1("Sequence Closed");
     this.panel.setWait(false);
     this.panel.call();
@@ -310,8 +301,9 @@ public class ApplicationInstance implements Presenter {
 
   /** Returns the audio output level */
   public float getAmplification() {
-    return this.worker == null ? this.amplification : this.worker
-        .getAmplification();
+    return this.worker == null
+      ? this.amplification
+      : this.worker.getAmplification();
   }
 
   /** Returns the audio track to output during playback */
@@ -381,6 +373,11 @@ public class ApplicationInstance implements Presenter {
     return out;
   }
 
+  /** Sets its count of {@code FileFrameLenses}. */
+  public void setLensCount(byte count) {
+    this.lensCount = count;
+  }
+
   /** Adjusts the audio output level */
   public void setAmplification(float amplification) {
     if (this.worker == null) {
@@ -436,8 +433,9 @@ public class ApplicationInstance implements Presenter {
 
   /** Returns whether render statistics are to be drawn */
   public boolean isDrawStatistics() {
-    return this.worker == null ? this.drawStatistics : this.worker
-        .isDrawStatistics();
+    return this.worker == null
+      ? this.drawStatistics
+      : this.worker.isDrawStatistics();
   }
 
   /** Returns whether the audio output is muted */
@@ -448,10 +446,9 @@ public class ApplicationInstance implements Presenter {
   /** Returns a new SequenceWorker of the given type with the given path */
   private SequenceWorker makeWorker(String path, String type) throws Exception {
     SequenceWorker out = null;
-
     switch (type) {
       case SEQUENCE:
-        out = new FrameSequenceWorker(this, path);
+        out = new FrameSequenceWorker(this, path, this.lensCount);
         this.panel.setHighSpeed(true);
         break;
       case FREEZING_SEQUENCE:
