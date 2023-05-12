@@ -128,7 +128,7 @@ class ApplicationMenu {
   }
 
   private void initializeHelp() {
-    this.itemsHelp.forEach(i -> this.menuHelp.add(i));
+    this.itemsHelp.forEach(item -> this.menuHelp.add(item));
     this.menuHelp.setMnemonic(KeyEvent.VK_H);
     decorateMenu(this.menuHelp);
   }

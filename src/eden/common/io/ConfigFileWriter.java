@@ -71,16 +71,16 @@ public class ConfigFileWriter
     throws IOException {
     writer.newLine();
     writer.newLine();
-    for (Map.Entry<String, String> e : map.entrySet()) {
+    for (Map.Entry<String, String> entry : map.entrySet()) {
       writer.write(INDENT);
-      writer.write(e.getKey());
+      writer.write(entry.getKey());
       writer.write(LEAD);
       writer.newLine();
-      writer.write(e.getValue());
+      writer.write(entry.getValue());
       writer.newLine();
       writer.write(INDENT);
       writer.write(LEAD);
-      writer.write(e.getKey());
+      writer.write(entry.getKey());
       writer.newLine();
       writer.newLine();
     }
@@ -92,12 +92,12 @@ public class ConfigFileWriter
     int index = 0;
     writer.newLine();
     writer.newLine();
-    for (String s : list) {
+    for (String item : list) {
       writer.write(INDENT);
       writer.write(Integer.toString(index));
       writer.write(LEAD);
       writer.newLine();
-      writer.write(s);
+      writer.write(item);
       writer.newLine();
       writer.write(INDENT);
       writer.write(LEAD);

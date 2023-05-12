@@ -107,12 +107,12 @@
 //        try {
 //            obj.attach(source0, -1);
 //            assertTrue(false);
-//        } catch (IndexOutOfBoundsException e) {}
+//        } catch (IndexOutOfBoundsException exception) {}
 //
 //        try {
 //            obj.attach(source0, 4);
 //            assertTrue(false);
-//        } catch (IndexOutOfBoundsException e) {}
+//        } catch (IndexOutOfBoundsException exception) {}
 //    }
 //
 //    @Test
@@ -120,12 +120,12 @@
 //        try {
 //            assertTrue(obj.attachAndReplace(source0, -1) == null);
 //            assertTrue(false);
-//        } catch (IndexOutOfBoundsException e) {}
+//        } catch (IndexOutOfBoundsException exception) {}
 //
 //        try {
 //            assertTrue(obj.attachAndReplace(source0, 4) == null);
 //            assertTrue(false);
-//        } catch (IndexOutOfBoundsException e) {}
+//        } catch (IndexOutOfBoundsException exception) {}
 //    }
 //
 //    @Test
@@ -133,12 +133,12 @@
 //        try {
 //            assertTrue(obj.detach(-1) == null);
 //            assertTrue(false);
-//        } catch (IndexOutOfBoundsException e) {}
+//        } catch (IndexOutOfBoundsException exception) {}
 //
 //        try {
 //            assertTrue(obj.detach(4) == null);
 //            assertTrue(false);
-//        } catch (IndexOutOfBoundsException e) {}
+//        } catch (IndexOutOfBoundsException exception) {}
 //    }
 //
 //    @Test
@@ -146,12 +146,12 @@
 //        try {
 //            assertTrue(obj.getChannel(-1) == null);
 //            assertTrue(false);
-//        } catch (IndexOutOfBoundsException e) {}
+//        } catch (IndexOutOfBoundsException exception) {}
 //
 //        try {
 //            assertTrue(obj.getChannel(4) == null);
 //            assertTrue(false);
-//        } catch (IndexOutOfBoundsException e) {}
+//        } catch (IndexOutOfBoundsException exception) {}
 //    }
 //
 //    @Test
@@ -159,12 +159,12 @@
 //        try {
 //            obj.getDspData(-1);
 //            assertTrue(false);
-//        } catch (IndexOutOfBoundsException e) {}
+//        } catch (IndexOutOfBoundsException exception) {}
 //
 //        try {
 //            obj.getDspData(4);
 //            assertTrue(false);
-//        } catch (IndexOutOfBoundsException e) {}
+//        } catch (IndexOutOfBoundsException exception) {}
 //    }
 //
 //    @Test
@@ -172,12 +172,12 @@
 //        try {
 //            assertTrue(obj.isChannelFree(4));
 //            assertTrue(false);
-//        } catch (IndexOutOfBoundsException e) {}
+//        } catch (IndexOutOfBoundsException exception) {}
 //
 //        try {
 //            assertTrue(obj.isChannelFree(4));
 //            assertTrue(false);
-//        } catch (IndexOutOfBoundsException e) {}
+//        } catch (IndexOutOfBoundsException exception) {}
 //    }
 //
 //    private int makeRandomInt() {

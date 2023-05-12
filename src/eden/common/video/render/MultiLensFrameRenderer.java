@@ -196,8 +196,8 @@ public class MultiLensFrameRenderer extends EDENRenderer {
     int initialId = this.reverse
       ? Integer.MIN_VALUE
       : Integer.MAX_VALUE, nearestId = initialId;
-    for (FileFrameLens l : this.lenses) {
-      int id = l.getNextIdentifier();
+    for (FileFrameLens lens : this.lenses) {
+      int id = lens.getNextIdentifier();
       //    if ((this.frame == null
       //        || reverse && id < this.frame.getIdentifier()
       //        || (!reverse && id > this.frame.getIdentifier()))
@@ -211,7 +211,7 @@ public class MultiLensFrameRenderer extends EDENRenderer {
       //      l.discard();
       if (reverse && id > nearestId || (!reverse && id < nearestId)) {
         nearestId = id;
-        this.lens = l;
+        this.lens = lens;
       }
     }
     return nearestId != initialId;

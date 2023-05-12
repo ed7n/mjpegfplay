@@ -56,10 +56,11 @@ class BackdropComponent extends JComponent {
     Image image;
     try {
       image = ImageIO.read(getClass().getResource("/res/backdrop.jpg"));
-    } catch (IOException e) {
+    } catch (IOException exception) {
       throw new RuntimeException(
-        "The application backdrop image file can not be read: " + e.toString(),
-        e
+        "The application backdrop image file can not be read: " +
+        exception.toString(),
+        exception
       );
     }
     this.image = image;

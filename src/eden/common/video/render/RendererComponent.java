@@ -61,7 +61,7 @@ public class RendererComponent extends JComponent implements ActionListener {
   @Override
   public void paintComponent(Graphics g) {
     Graphics2D g2 = (Graphics2D) g.create();
-    this.renderers.forEach(r -> r.draw(this, g2));
+    this.renderers.forEach(renderer -> renderer.draw(this, g2));
   }
 
   @Override
@@ -76,7 +76,7 @@ public class RendererComponent extends JComponent implements ActionListener {
    */
   @Override
   public void actionPerformed(ActionEvent event) {
-    this.renderers.forEach(r -> r.update(this, event));
+    this.renderers.forEach(renderer -> renderer.update(this, event));
     repaint();
   }
 

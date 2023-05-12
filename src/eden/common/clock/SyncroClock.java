@@ -89,8 +89,8 @@ public class SyncroClock extends EDENTimer {
    */
   @Override
   public void tick() {
-    for (ActionListener l : this.timer.getActionListeners()) {
-      l.actionPerformed(this.tickEvent);
+    for (ActionListener listener : this.timer.getActionListeners()) {
+      listener.actionPerformed(this.tickEvent);
     }
   }
 

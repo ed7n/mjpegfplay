@@ -190,7 +190,7 @@ public class OutputMixer implements Runnable {
     try {
       attach(source, channel);
       return channel;
-    } catch (ChannelNotFreeException e) {
+    } catch (ChannelNotFreeException exception) {
       return -2;
     }
   }
@@ -261,8 +261,8 @@ public class OutputMixer implements Runnable {
 
   /** Detaches all {@code OutputSources} from this {@code OutputMixer} */
   public void detachAll() {
-    for (int i = 0; i < this.sources.length; i++) {
-      this.sources[i] = null;
+    for (int index = 0; index < this.sources.length; index++) {
+      this.sources[index] = null;
     }
   }
 
@@ -271,9 +271,9 @@ public class OutputMixer implements Runnable {
    * starting positions
    */
   public void rewindAll() {
-    for (OutputSource s : this.sources) {
-      if (s != null) {
-        s.jumpToStart();
+    for (OutputSource source : this.sources) {
+      if (source != null) {
+        source.jumpToStart();
       }
     }
   }
@@ -283,8 +283,8 @@ public class OutputMixer implements Runnable {
    * OutputMixer}
    */
   public void resetAllDSP() {
-    for (ChannelDSPData d : this.dspData) {
-      d.reset();
+    for (ChannelDSPData data : this.dspData) {
+      data.reset();
     }
   }
 
@@ -494,7 +494,7 @@ public class OutputMixer implements Runnable {
       this.line.flush();
       try {
         wait();
-      } catch (InterruptedException e) {
+      } catch (InterruptedException exception) {
         return;
       }
     }
@@ -511,7 +511,7 @@ public class OutputMixer implements Runnable {
       (this.line.getBufferSize() - this.bufferMixd.length)
     ) try {
       Thread.sleep(this.napLength);
-    } catch (InterruptedException e) {
+    } catch (InterruptedException exception) {
       return;
     }
   }
@@ -519,11 +519,15 @@ public class OutputMixer implements Runnable {
   /** Manipulates the mixed audio data in bufferMixd */
   private void manipulate() {
     long sampleMixd;
-    for (int i = 0; i + this.bytes <= this.bufferMixd.length; i += this.bytes) {
+    for (
+      int index = 0;
+      index + this.bytes <= this.bufferMixd.length;
+      index += this.bytes
+    ) {
       sampleMixd =
         this.manipulator.bytesToInt(
             this.bufferMixd,
-            i,
+            index,
             this.format.isBigEndian()
           );
       sampleMixd =
@@ -534,7 +538,7 @@ public class OutputMixer implements Runnable {
       this.manipulator.intToBytes(
           this.bufferMixd,
           this.manipulator.clip(sampleMixd),
-          i
+          index
         );
     }
   }
@@ -545,17 +549,21 @@ public class OutputMixer implements Runnable {
   private void manipulate(int channel) {
     long sampleRead;
     long sampleMixd;
-    for (int i = 0; i + this.bytes <= this.bufferRead.length; i += this.bytes) {
+    for (
+      int index = 0;
+      index + this.bytes <= this.bufferRead.length;
+      index += this.bytes
+    ) {
       sampleRead =
         this.manipulator.bytesToInt(
             this.bufferRead,
-            i,
+            index,
             this.sources[channel].getFormat().isBigEndian()
           );
       sampleMixd =
         this.manipulator.bytesToInt(
             this.bufferMixd,
-            i,
+            index,
             this.format.isBigEndian()
           );
       sampleRead =
@@ -567,7 +575,7 @@ public class OutputMixer implements Runnable {
       this.manipulator.intToBytes(
           this.bufferMixd,
           this.manipulator.clip(sampleMixd),
-          i
+          index
         );
     }
   }
@@ -581,8 +589,8 @@ public class OutputMixer implements Runnable {
   /** Makes an array of initialized ChannelDSPData */
   private ChannelDSPData[] makeDSPData() {
     ChannelDSPData[] out = new ChannelDSPData[this.sources.length];
-    for (byte b = 0; b < out.length; b++) {
-      out[b] = new ChannelDSPData();
+    for (byte index = 0; index < out.length; index++) {
+      out[index] = new ChannelDSPData();
     }
     return out;
   }
@@ -602,8 +610,8 @@ public class OutputMixer implements Runnable {
       SourceDataLine out = AudioSystem.getSourceDataLine(this.format);
       out.open();
       return out;
-    } catch (LineUnavailableException e) {
-      die(e);
+    } catch (LineUnavailableException exception) {
+      die(exception);
       return null;
     }
   }

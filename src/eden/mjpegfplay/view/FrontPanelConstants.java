@@ -21,8 +21,8 @@ public class FrontPanelConstants {
   public static final char[] TEXT_BLANK = new char[TEXT_LENGTH];
 
   static {
-    for (byte b = 0; b < TEXT_LENGTH; b++) {
-      TEXT_BLANK[b] = ' ';
+    for (byte index = 0; index < TEXT_LENGTH; index++) {
+      TEXT_BLANK[index] = ' ';
     }
   }
 

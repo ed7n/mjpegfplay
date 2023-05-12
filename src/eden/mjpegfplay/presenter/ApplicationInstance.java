@@ -112,10 +112,10 @@ public class ApplicationInstance implements Presenter {
       this.map = reader.readToMap();
       this.type = type;
       this.modified = false;
-    } catch (Exception e) {
+    } catch (Exception exception) {
       this.panel.setWait(false);
       this.panel.call();
-      throw e;
+      throw exception;
     }
     this.ui.initializePresentation(
         this.map.get("name"),
@@ -132,10 +132,10 @@ public class ApplicationInstance implements Presenter {
     try {
       this.writer.write(this.map);
       this.modified = false;
-    } catch (Exception e) {
+    } catch (Exception exception) {
       this.panel.setWait(false);
       this.panel.call();
-      throw e;
+      throw exception;
     }
     this.panel.setWait(false);
     this.panel.call();

@@ -61,7 +61,7 @@ public abstract class ReadAheadLens<T> implements Runnable {
   //        getNextDataChunk();
   //        add(dataChunk);
   //      }
-  //    } catch (Exception e) {
+  //    } catch (Exception exception) {
   //      this.dead.set(true);
   //    }
   //  }

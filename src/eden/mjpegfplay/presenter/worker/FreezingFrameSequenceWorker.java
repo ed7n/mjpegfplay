@@ -367,15 +367,15 @@ public class FreezingFrameSequenceWorker
    * method traverses over the freezing intervals forward from the start.
    */
   private int searchFreezePoint(int position) {
-    for (int i = 0; i < this.freezePoints.size(); i += 2) {
+    for (int index = 0; index < this.freezePoints.size(); index += 2) {
       if (
-        position >= this.freezePoints.get(i) &&
-        position < this.freezePoints.get(i + 1)
+        position >= this.freezePoints.get(index) &&
+        position < this.freezePoints.get(index + 1)
       ) {
-        this.index = i;
-        return this.freezePoints.get(i);
-      } else if (position < this.freezePoints.get(i)) {
-        this.index = i;
+        this.index = index;
+        return this.freezePoints.get(index);
+      } else if (position < this.freezePoints.get(index)) {
+        this.index = index;
         return position;
       }
     }
@@ -398,21 +398,21 @@ public class FreezingFrameSequenceWorker
             .read("freezePoints")
             .split(",")
         );
-    } catch (NoSuchElementException e) {
+    } catch (NoSuchElementException exception) {
       throw new BadMetadataException("freezePoints");
     }
     if (freezePoints.get(freezePoints.size() - 1).equals(NUL_STRING)) {
       freezePoints.remove(freezePoints.size() - 1);
     }
-    for (int i = 0; i < freezePoints.size(); i++) {
+    for (int index = 0; index < freezePoints.size(); index++) {
       int freezePoint;
       try {
-        freezePoint = Integer.parseInt(freezePoints.get(i));
-      } catch (NumberFormatException e) {
-        throw new BadMetadataException(freezePoints.get(i));
+        freezePoint = Integer.parseInt(freezePoints.get(index));
+      } catch (NumberFormatException exception) {
+        throw new BadMetadataException(freezePoints.get(index));
       }
       if (
-        (i > 0 && freezePoint < out.get(i - 1)) ||
+        (index > 0 && freezePoint < out.get(index - 1)) ||
         freezePoint < this.sequence.getStart() ||
         freezePoint > this.sequence.getEnd()
       ) {

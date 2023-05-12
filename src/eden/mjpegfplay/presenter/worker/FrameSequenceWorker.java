@@ -469,11 +469,11 @@ public class FrameSequenceWorker implements SequenceWorker {
   protected void skipAudioTracks(double percent) {
     this.mixer.rewindAll();
     this.tracks.stream()
-      .filter(s -> !(s == null))
-      .forEachOrdered(s -> {
-        long skip = Math.round(percent * s.getStreamSize());
+      .filter(source -> source != null)
+      .forEachOrdered(source -> {
+        long skip = Math.round(percent * source.getStreamSize());
         skip -= skip % this.pilot.getFormat().getFrameSize();
-        s.skip(skip);
+        source.skip(skip);
       });
   }
 
@@ -523,9 +523,9 @@ public class FrameSequenceWorker implements SequenceWorker {
         Short.parseShort(map.get("height")),
         map.get("extension")
       );
-    } catch (NumberFormatException e) {
+    } catch (NumberFormatException exception) {
       throw new BadMetadataException();
-    } catch (IllegalArgumentException e) {
+    } catch (IllegalArgumentException exception) {
       throw new BadParameterException();
     }
   }
@@ -555,8 +555,10 @@ public class FrameSequenceWorker implements SequenceWorker {
     byte size
   ) {
     List<FileFrameLens> out = new ArrayList<>(size);
-    for (byte b = 0; b < size; b++) {
-      out.add(new FileFrameLens(path, sequence, b, (byte) (size - 1)));
+    for (byte index = 0; index < size; index++) {
+      out.add(
+        new FileFrameLens(path, sequence, (short) 2, index, (byte) (size - 1))
+      );
     }
     return out;
   }
@@ -586,7 +588,7 @@ public class FrameSequenceWorker implements SequenceWorker {
       File file = new File(path);
       try {
         out.add(new OutputSource(file));
-      } catch (UnsupportedAudioFileException e) {
+      } catch (UnsupportedAudioFileException exception) {
         // TODO
       }
     }
@@ -598,9 +600,9 @@ public class FrameSequenceWorker implements SequenceWorker {
    * SequenceWorker, or null if there are no OutputSources.
    */
   private OutputSource makePilot() {
-    for (OutputSource s : this.tracks) {
-      if (s != null) {
-        return s;
+    for (OutputSource source : this.tracks) {
+      if (source != null) {
+        return source;
       }
     }
     return null;
@@ -617,15 +619,13 @@ public class FrameSequenceWorker implements SequenceWorker {
         this.pilot != null
           ? new OutputMixer((byte) this.tracks.size(), this.pilot.getFormat())
           : new OutputMixer((byte) 1);
-    } catch (IllegalArgumentException e) {
+    } catch (IllegalArgumentException exception) {
       this.tracks.stream()
         .filter(Objects::nonNull)
         .forEach(OutputSource::close);
-      throw e;
+      throw exception;
     }
-    this.tracks.forEach(s -> {
-        out.attach(s);
-      });
+    this.tracks.forEach(source -> out.attach(source));
     out.setSolo((short) 0);
     return out;
   }
@@ -661,8 +661,8 @@ public class FrameSequenceWorker implements SequenceWorker {
    */
   private List<Thread> makeLensThreads() {
     List<Thread> out = new ArrayList<>(this.lenses.size());
-    for (byte b = 0; b < this.lenses.size(); b++) {
-      out.add(makeDaemonThread(this.lenses.get(b), "/Lens[" + b + "]"));
+    for (byte index = 0; index < this.lenses.size(); index++) {
+      out.add(makeDaemonThread(this.lenses.get(index), "/Lens[" + index + "]"));
     }
     return Collections.unmodifiableList(out);
   }

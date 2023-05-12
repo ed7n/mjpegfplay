@@ -200,8 +200,8 @@ public class ConsoleInterface implements Runnable {
           (short) height
         );
       sayInfo(DONE);
-    } catch (Exception e) {
-      sayError(e.toString());
+    } catch (Exception exception) {
+      sayError(exception.toString());
     }
   }
 
@@ -221,8 +221,8 @@ public class ConsoleInterface implements Runnable {
       sayInfo("Now loading.");
       this.instance.open(in, type);
       sayInfo(DONE);
-    } catch (Exception e) {
-      sayError(e.toString());
+    } catch (Exception exception) {
+      sayError(exception.toString());
     }
   }
 
@@ -239,8 +239,8 @@ public class ConsoleInterface implements Runnable {
       sayInfo("Now saving.");
       this.instance.save();
       sayInfo(DONE);
-    } catch (Exception e) {
-      sayError(e.toString());
+    } catch (Exception exception) {
+      sayError(exception.toString());
     }
   }
 
@@ -260,8 +260,8 @@ public class ConsoleInterface implements Runnable {
       sayInfo("Now reloading.");
       this.instance.reload();
       sayInfo(DONE);
-    } catch (Exception e) {
-      sayError(e.toString());
+    } catch (Exception exception) {
+      sayError(exception.toString());
     }
   }
 
@@ -423,10 +423,6 @@ public class ConsoleInterface implements Runnable {
    * UI: /Transport/SetLensCount
    */
   private void uiSetLensCount() {
-    if (this.instance.isLoaded()) {
-      sayError("Eject the current sequence first.");
-      return;
-    }
     int in = askInteger("Enter render lens count [1, 9].");
     if (in < 1 || in > 9) {
       sayError("Invalid count.");
@@ -523,12 +519,12 @@ public class ConsoleInterface implements Runnable {
   /** Prints the given String[] as a choice menu */
   private void sayMenu(String[] menu) {
     StringBuilder builder = new StringBuilder();
-    for (int i = 1; i <= menu.length; i++) {
+    for (int index = 1; index <= menu.length; index++) {
       builder
         .append('[')
-        .append(i)
+        .append(index)
         .append("] ")
-        .append(menu[i - 1])
+        .append(menu[index - 1])
         .append(EOL);
     }
     this.out.println(builder.append("[0] Return").toString());
@@ -553,7 +549,7 @@ public class ConsoleInterface implements Runnable {
           continue;
         }
         break;
-      } catch (NumberFormatException e) {
+      } catch (NumberFormatException exception) {
         sayError("Bad input.");
       }
     }
@@ -574,7 +570,7 @@ public class ConsoleInterface implements Runnable {
       this.out.print("[" + APPLICATION_NAME + "/?] " + prompt + EOL + "> ");
       try {
         return Integer.parseInt(scanner.nextLine());
-      } catch (NumberFormatException e) {
+      } catch (NumberFormatException exception) {
         sayError("Bad input.");
       }
     }

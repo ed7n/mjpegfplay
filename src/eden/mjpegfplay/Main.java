@@ -21,13 +21,13 @@ public class Main {
   /**
    * The main method is the entry point to this application
    *
-   * @param args Command-line arguments to be passed on execution
+   * @param arguments Command-line arguments to be passed on execution
    */
-  public static void main(String[] args) {
+  public static void main(String[] arguments) {
     boolean console = false;
     boolean noOpenGl = false;
-    for (String s : args) {
-      switch (s.toLowerCase()) {
+    for (String argument : arguments) {
+      switch (argument.toLowerCase()) {
         case "--console":
           console = true;
           break;

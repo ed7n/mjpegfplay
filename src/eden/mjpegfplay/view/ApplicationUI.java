@@ -43,7 +43,7 @@ import javax.swing.event.ChangeListener;
  * Use {@code ApplicationUIMaker} to instantiate objects of this class.
  *
  * @author Brendon
- * @version u0r5, 05/05/2023.
+ * @version u0r6, 05/12/2023.
  *
  * @see ApplicationUIMaker
  */
@@ -172,6 +172,7 @@ public class ApplicationUI implements ActionListener, ChangeListener {
             break;
           case T_TRICKPLAY:
             trickPlay();
+            break;
           case T_SET_LENSCOUNT:
             setLensCount();
         }
@@ -316,10 +317,10 @@ public class ApplicationUI implements ActionListener, ChangeListener {
     try {
       this.instance.open(path, type);
       return;
-    } catch (MalformedSequenceException e) {
-      this.messenger.sayMalformedSequenceException(e);
-    } catch (Exception e) {
-      this.messenger.sayException(e);
+    } catch (MalformedSequenceException exception) {
+      this.messenger.sayMalformedSequenceException(exception);
+    } catch (Exception exception) {
+      this.messenger.sayException(exception);
     }
     if (!this.instance.isLoaded()) {
       this.frontPanel.setText0(NUL_STRING);
@@ -334,10 +335,10 @@ public class ApplicationUI implements ActionListener, ChangeListener {
     }
     try {
       this.instance.reload();
-    } catch (MalformedSequenceException e) {
-      this.messenger.sayMalformedSequenceException(e);
-    } catch (Exception e) {
-      this.messenger.sayException(e);
+    } catch (MalformedSequenceException exception) {
+      this.messenger.sayMalformedSequenceException(exception);
+    } catch (Exception exception) {
+      this.messenger.sayException(exception);
     }
   }
 
@@ -554,19 +555,14 @@ public class ApplicationUI implements ActionListener, ChangeListener {
   }
 
   private void setLensCount() {
-    if (this.instance.isLoaded()) {
-      this.messenger.sayError(
-          "Lenses In Use",
-          "Eject the current sequence first."
-        );
-      return;
-    }
     int in =
       this.messenger.askInteger(
           "Set Lens Count",
-          "Increasing this may improve video performance at the cost of memory usage." +
+          "Adjusts the balance between concurrency (higher) and stability (lower)." +
           EOL +
-          "Default is 3." +
+          "A higher count also requires more memory." +
+          EOL +
+          "Changes will apply on subsequent sequences. Default is 3." +
           EOL +
           EOL +
           "Enter render lens count [1, 9]."

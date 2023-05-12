@@ -87,11 +87,11 @@ public class AudioManipulator {
   public int bytesToInt(byte[] bytes, int index, boolean bigEndian) {
     // ack: https://stackoverflow.com/a/18219399
     int out = 0;
-    for (int i = 0; i < this.bytes; i++) {
+    for (int offset = 0; offset < this.bytes; offset++) {
       out |=
         !bigEndian
-          ? (bytes[index + i] & 0xFF) << (8 * i)
-          : (bytes[index + this.bytes - 1 - i] & 0xFF) << (8 * i);
+          ? (bytes[index + offset] & 0xFF) << (8 * offset)
+          : (bytes[index + this.bytes - 1 - offset] & 0xFF) << (8 * offset);
     }
     if (
       (!bigEndian && bytes[index + this.bytes - 1] < 0) ||
@@ -132,11 +132,11 @@ public class AudioManipulator {
    */
   public void intToBytes(byte[] bytes, int value, int index) {
     // ack: https://stackoverflow.com/a/2183259
-    for (int i = 0; i < this.bytes; i++) {
+    for (int offset = 0; offset < this.bytes; offset++) {
       if (this.bigEndian) {
-        bytes[index + this.bytes - 1 - i] = (byte) (value >> (8 * i));
+        bytes[index + this.bytes - 1 - offset] = (byte) (value >> (8 * offset));
       } else {
-        bytes[index + i] = (byte) (value >> (8 * i));
+        bytes[index + offset] = (byte) (value >> (8 * offset));
       }
     }
   }
@@ -146,8 +146,8 @@ public class AudioManipulator {
    * {@code Arrays.fill(bytes, (byte) 0)}.
    */
   public void zero(byte[] bytes) {
-    for (int i = 0; i < bytes.length; i++) {
-      bytes[i] = 0;
+    for (int index = 0; index < bytes.length; index++) {
+      bytes[index] = 0;
     }
   }
 

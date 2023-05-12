@@ -193,41 +193,41 @@ public class ApplicationUIMaker extends ApplicationUI {
   }
 
   private void initializeLabels() {
-    this.labels.forEach(l -> this.panelInterface.add(l));
-    for (byte b = 0; b < 7; b++) {
+    this.labels.forEach(label -> this.panelInterface.add(label));
+    for (byte index = 0; index < 7; index++) {
       this.layout.putConstraint(
           SpringLayout.SOUTH,
-          this.labels.get(b),
+          this.labels.get(index),
           0,
           SpringLayout.NORTH,
-          b > 4 ? this.buttons.get(6) : this.buttons.get(0)
+          index > 4 ? this.buttons.get(6) : this.buttons.get(0)
         );
-      if (b < 4) {
+      if (index < 4) {
         this.layout.putConstraint(
             SpringLayout.HORIZONTAL_CENTER,
-            this.labels.get(b),
+            this.labels.get(index),
             0,
             SpringLayout.HORIZONTAL_CENTER,
-            this.buttons.get(b)
+            this.buttons.get(index)
           );
-      } else if (b == 6) {
+      } else if (index == 6) {
         this.layout.putConstraint(
             SpringLayout.HORIZONTAL_CENTER,
-            this.labels.get(b),
+            this.labels.get(index),
             0,
             SpringLayout.HORIZONTAL_CENTER,
             this.buttons.get(9)
           );
       }
-      if (4 + b >= 7) {
+      if (4 + index >= 7) {
         continue;
       }
       this.layout.putConstraint(
           SpringLayout.HORIZONTAL_CENTER,
-          this.labels.get(4 + b),
+          this.labels.get(4 + index),
           0,
           SpringLayout.EAST,
-          this.buttons.get(4 + (2 * b))
+          this.buttons.get(4 + (2 * index))
         );
     }
     this.layout.putConstraint(
@@ -261,65 +261,69 @@ public class ApplicationUIMaker extends ApplicationUI {
   }
 
   private void initializeButtons() {
-    this.buttons.forEach(b -> this.panelInterface.add(b));
-    for (byte b = 0; b < 6; b++) {
+    this.buttons.forEach(button -> this.panelInterface.add(button));
+    for (byte index = 0; index < 6; index++) {
       this.layout.putConstraint(
           SpringLayout.NORTH,
-          this.buttons.get(b),
+          this.buttons.get(index),
           -160 + (PADDING_VERTICAL * 2),
           SpringLayout.SOUTH,
           this.panelInterface
         );
       this.layout.putConstraint(
           SpringLayout.SOUTH,
-          this.buttons.get(b),
+          this.buttons.get(index),
           BUTTON_HEIGHT,
           SpringLayout.NORTH,
-          this.buttons.get(b)
+          this.buttons.get(index)
         );
       this.layout.putConstraint(
           SpringLayout.WEST,
-          this.buttons.get(b),
-          b == 0 ? PADDING_HORIZONTAL : 0,
-          b == 0 ? SpringLayout.WEST : SpringLayout.EAST,
-          b == 0 ? this.frameMain.getContentPane() : this.buttons.get(b - 1)
+          this.buttons.get(index),
+          index == 0 ? PADDING_HORIZONTAL : 0,
+          index == 0 ? SpringLayout.WEST : SpringLayout.EAST,
+          index == 0
+            ? this.frameMain.getContentPane()
+            : this.buttons.get(index - 1)
         );
       this.layout.putConstraint(
           SpringLayout.EAST,
-          this.buttons.get(b),
-          b == 1 ? BUTTON_WIDTH * 2 : BUTTON_WIDTH,
+          this.buttons.get(index),
+          index == 1 ? BUTTON_WIDTH * 2 : BUTTON_WIDTH,
           SpringLayout.WEST,
-          this.buttons.get(b)
+          this.buttons.get(index)
         );
     }
-    for (byte b = 6; b < 12; b++) {
+    for (byte index = 6; index < 12; index++) {
       this.layout.putConstraint(
           SpringLayout.NORTH,
-          this.buttons.get(b),
+          this.buttons.get(index),
           PADDING_HORIZONTAL * 2,
           SpringLayout.SOUTH,
           this.buttons.get(0)
         );
       this.layout.putConstraint(
           SpringLayout.SOUTH,
-          this.buttons.get(b),
+          this.buttons.get(index),
           BUTTON_HEIGHT,
           SpringLayout.NORTH,
-          this.buttons.get(b)
+          this.buttons.get(index)
         );
       this.layout.putConstraint(
           SpringLayout.WEST,
-          this.buttons.get(b),
-          b == 6 ? PADDING_HORIZONTAL : 0,
-          b == 6 ? SpringLayout.WEST : SpringLayout.EAST,
-          b == 6 ? this.frameMain.getContentPane() : this.buttons.get(b - 1)
+          this.buttons.get(index),
+          index == 6 ? PADDING_HORIZONTAL : 0,
+          index == 6 ? SpringLayout.WEST : SpringLayout.EAST,
+          index == 6
+            ? this.frameMain.getContentPane()
+            : this.buttons.get(index - 1)
         );
       this.layout.putConstraint(
           SpringLayout.EAST,
-          this.buttons.get(b),
+          this.buttons.get(index),
           BUTTON_WIDTH,
           SpringLayout.WEST,
-          this.buttons.get(b)
+          this.buttons.get(index)
         );
     }
     this.layout.putConstraint(
@@ -377,6 +381,13 @@ public class ApplicationUIMaker extends ApplicationUI {
         this.spinner,
         0,
         SpringLayout.HORIZONTAL_CENTER,
+        this.buttons.get(9)
+      );
+    this.layout.putConstraint(
+        SpringLayout.EAST,
+        this.spinner,
+        BUTTON_WIDTH,
+        SpringLayout.WEST,
         this.buttons.get(9)
       );
   }

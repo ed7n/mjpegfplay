@@ -2,6 +2,13 @@ mJPEGfPlay: Changes
 
 —Update 0
 
+——Revision 6, 05/12/2023.
+- Allow setting the lens count at any time.
+- Fixed `Trickplay` also calling `Set Lens Count`.
+- Reduced lens buffer count to 2.
+- Reworded `Set Lens Count` description.
+- Tweaked New Sequence dialog.
+
 ——Revision 5, 05/05/2023.
 - `Set Lens Count`.
 - Fixed code inspection warnings where sensible.

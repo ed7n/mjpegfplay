@@ -44,23 +44,17 @@ class UIConstants {
     HashMap<TextAttribute, Object> map = new HashMap<>();
     map.put(TextAttribute.FAMILY, Font.SANS_SERIF);
     map.put(TextAttribute.FOREGROUND, CSSColor.LIGHT_GOLDENROD_YELLOW);
-    map.put(TextAttribute.SIZE, 12);
     map.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_MEDIUM);
     map.put(TextAttribute.WIDTH, TextAttribute.WIDTH_SEMI_EXTENDED);
-    FONT_MENU = new Font(map);
-    map.put(TextAttribute.SIZE, 10);
     FONT_DIALOG = new Font(map);
+    FONT_MENU = FONT_DIALOG;
     map.put(TextAttribute.SIZE, 8);
     FONT_LABEL = new Font(map);
-    map.clear();
-    map.put(TextAttribute.FAMILY, Font.MONOSPACED);
+    map.remove(TextAttribute.SIZE);
     map.put(TextAttribute.FOREGROUND, CSSColor.BLACK);
-    map.put(TextAttribute.SIZE, 14);
+    FONT_TEXT_FIELD = new Font(map);
     map.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD);
     FONT_BUTTON = new Font(map);
-    map.put(TextAttribute.FAMILY, Font.SANS_SERIF);
-    map.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_REGULAR);
-    FONT_TEXT_FIELD = new Font(map);
   }
 
   /** Button Border */

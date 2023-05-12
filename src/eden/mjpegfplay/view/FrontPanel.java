@@ -74,7 +74,7 @@ class FrontPanel extends JComponent implements FrontPanelInterface {
       synchronized (this) {
         try {
           wait();
-        } catch (InterruptedException e) {
+        } catch (InterruptedException exception) {
           return;
         }
       }

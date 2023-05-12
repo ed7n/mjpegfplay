@@ -101,8 +101,8 @@ public class OutputSource {
         this.done = true;
       }
       return readSize;
-    } catch (IOException e) {
-      die(e);
+    } catch (IOException exception) {
+      die(exception);
       return -1;
     }
   }
@@ -136,8 +136,8 @@ public class OutputSource {
         }
       }
       updateDone();
-    } catch (IOException e) {
-      die(e);
+    } catch (IOException exception) {
+      die(exception);
     }
   }
 
@@ -150,8 +150,8 @@ public class OutputSource {
     }
     try {
       this.markPosition = this.streamSize - this.stream.available();
-    } catch (IOException e) {
-      die(e);
+    } catch (IOException exception) {
+      die(exception);
     }
   }
 
@@ -166,8 +166,8 @@ public class OutputSource {
     try {
       reset();
       skip(this.markPosition);
-    } catch (IOException e) {
-      die(e);
+    } catch (IOException exception) {
+      die(exception);
     }
   }
 
@@ -182,8 +182,8 @@ public class OutputSource {
     try {
       reset();
       updateDone();
-    } catch (IOException e) {
-      die(e);
+    } catch (IOException exception) {
+      die(exception);
     }
   }
 
@@ -198,8 +198,8 @@ public class OutputSource {
     try {
       this.stream.close();
       die(new IOException("Stream closed"));
-    } catch (IOException e) {
-      die(e);
+    } catch (IOException exception) {
+      die(exception);
     }
   }
 
@@ -240,8 +240,8 @@ public class OutputSource {
     }
     try {
       return this.stream.available();
-    } catch (IOException e) {
-      die(e);
+    } catch (IOException exception) {
+      die(exception);
       return -1;
     }
   }
@@ -256,8 +256,8 @@ public class OutputSource {
     }
     try {
       return this.streamSize - this.stream.available();
-    } catch (IOException e) {
-      die(e);
+    } catch (IOException exception) {
+      die(exception);
       return -1;
     }
   }
@@ -284,8 +284,8 @@ public class OutputSource {
         (double) (this.streamSize - this.stream.available() - plus) /
         (this.format.getFrameSize() * this.format.getFrameRate())
       );
-    } catch (IOException e) {
-      die(e);
+    } catch (IOException exception) {
+      die(exception);
       return 0;
     }
   }
@@ -305,8 +305,8 @@ public class OutputSource {
         (double) (this.streamSize - this.stream.available() - plus) /
         this.streamSize
       );
-    } catch (IOException e) {
-      die(e);
+    } catch (IOException exception) {
+      die(exception);
       return 0;
     }
   }
@@ -437,6 +437,6 @@ public class OutputSource {
   private void reset() throws IOException {
     try {
       this.stream = AudioSystem.getAudioInputStream(this.file);
-    } catch (UnsupportedAudioFileException e) {}
+    } catch (UnsupportedAudioFileException exception) {}
   }
 }

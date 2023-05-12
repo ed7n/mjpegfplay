@@ -66,7 +66,7 @@
 //
 //        try {
 //            assertTrue(readerMapped.read("TEST+KEY").equals("Don't touch me!"));
-//        } catch (NoSuchElementException e) {}
+//        } catch (NoSuchElementException exception) {}
 //    }
 //
 //    @Test
@@ -75,7 +75,7 @@
 //        try {
 //            assertTrue(readerMapped.read(NUL_STRING).equals(
 //                "Don't touch me either!"));
-//        } catch (NoSuchElementException e) {}
+//        } catch (NoSuchElementException exception) {}
 //    }
 //
 //    @Test
@@ -118,7 +118,7 @@
 //        try {
 //            readerIndexed.read(13);
 //            assertTrue(false);
-//        } catch (IndexOutOfBoundsException e) {}
+//        } catch (IndexOutOfBoundsException exception) {}
 //    }
 //
 //    @Test
@@ -166,7 +166,7 @@
 //        try {
 //            readerMapped.read(null);
 //            assertTrue(false);
-//        } catch (IllegalArgumentException e){}
+//        } catch (IllegalArgumentException exception){}
 //    }
 //
 //    @Test
@@ -175,7 +175,7 @@
 //        try {
 //            writerMapped.write(null);
 //            assertTrue(false);
-//        } catch (IllegalArgumentException e){}
+//        } catch (IllegalArgumentException exception){}
 //    }
 //
 //    @Test
@@ -184,7 +184,7 @@
 //        try {
 //            readerIndexed.read(-1);
 //            assertTrue(false);
-//        } catch (IllegalArgumentException e){}
+//        } catch (IllegalArgumentException exception){}
 //    }
 //
 //    @Test
@@ -193,6 +193,6 @@
 //        try {
 //            writerIndexed.write(null);
 //            assertTrue(false);
-//        } catch (IllegalArgumentException e){}
+//        } catch (IllegalArgumentException exception){}
 //    }
 //}

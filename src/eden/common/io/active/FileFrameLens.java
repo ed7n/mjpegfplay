@@ -113,7 +113,7 @@ public class FileFrameLens extends ReadAheadLens<EDENFrame> {
             synchronized (this) {
               wait();
             }
-          } catch (InterruptedException e) {
+          } catch (InterruptedException exception) {
             return;
           }
           if (this.call.compareAndSet(true, false)) {
@@ -131,14 +131,14 @@ public class FileFrameLens extends ReadAheadLens<EDENFrame> {
                 frame
               )
             );
-          } catch (IIOException e) {
+          } catch (IIOException exception) {
             add(null);
           }
           frame += skip;
         }
       }
-    } catch (IOException | NullPointerException e) {
-      die(e);
+    } catch (IOException | NullPointerException exception) {
+      die(exception);
     }
   }
 
@@ -157,7 +157,7 @@ public class FileFrameLens extends ReadAheadLens<EDENFrame> {
       while (this.call.get() || this.buffer.isEmpty()) {
         wait();
       }
-    } catch (InterruptedException e) {}
+    } catch (InterruptedException exception) {}
   }
 
   /**

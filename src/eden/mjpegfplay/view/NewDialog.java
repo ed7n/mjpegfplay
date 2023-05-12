@@ -20,7 +20,7 @@ import javax.swing.SpringLayout;
  * A NewDialog presents a form to make new sequence metadata files.
  *
  * @author Brendon
- * @version u0r4, 11/06/2021.
+ * @version u0r6, 05/12/2023.
  */
 class NewDialog implements ActionListener {
 
@@ -48,7 +48,7 @@ class NewDialog implements ActionListener {
     this.dialog.getContentPane().setBackground(COLOR_INTERFACE);
     this.dialog.getContentPane().setLayout(this.layout);
     this.dialog.setResizable(true);
-    this.dialog.setSize(new Dimension(340, 280));
+    this.dialog.setSize(new Dimension(336, 280));
     initializeLabels();
     initializeTextFields();
     initializeButtons();
@@ -86,8 +86,8 @@ class NewDialog implements ActionListener {
               Short.parseShort(this.textFields.get(4).getText()),
               Short.parseShort(this.textFields.get(5).getText())
             );
-        } catch (Exception e) {
-          this.ui.messenger.sayException(e);
+        } catch (Exception exception) {
+          this.ui.messenger.sayException(exception);
           break;
         }
         this.ui.messenger.sayInfo(
@@ -95,9 +95,7 @@ class NewDialog implements ActionListener {
             "The metadata file has been written successfully."
           );
       case "cancel":
-        this.textFields.forEach(f -> {
-            f.setText(null);
-          });
+        this.textFields.forEach(field -> field.setText(null));
         this.dialog.setVisible(false);
         break;
     }
@@ -112,9 +110,7 @@ class NewDialog implements ActionListener {
   }
 
   private void initializeLabels() {
-    this.labels.forEach(l -> {
-        this.dialog.getContentPane().add(l);
-      });
+    this.labels.forEach(label -> this.dialog.getContentPane().add(label));
     this.layout.putConstraint(
         SpringLayout.NORTH,
         this.labels.get(0),
@@ -216,9 +212,7 @@ class NewDialog implements ActionListener {
   }
 
   private void initializeTextFields() {
-    this.textFields.forEach(f -> {
-        this.dialog.getContentPane().add(f);
-      });
+    this.textFields.forEach(field -> this.dialog.getContentPane().add(field));
     this.layout.putConstraint(
         SpringLayout.NORTH,
         this.textFields.get(0),
@@ -231,13 +225,6 @@ class NewDialog implements ActionListener {
         this.textFields.get(0),
         PADDING_HORIZONTAL,
         SpringLayout.WEST,
-        this.dialog.getContentPane()
-      );
-    this.layout.putConstraint(
-        SpringLayout.EAST,
-        this.textFields.get(0),
-        -PADDING_HORIZONTAL,
-        SpringLayout.EAST,
         this.dialog.getContentPane()
       );
     this.layout.putConstraint(
@@ -281,13 +268,6 @@ class NewDialog implements ActionListener {
         PADDING_HORIZONTAL,
         SpringLayout.EAST,
         this.textFields.get(2)
-      );
-    this.layout.putConstraint(
-        SpringLayout.EAST,
-        this.textFields.get(3),
-        -PADDING_HORIZONTAL,
-        SpringLayout.EAST,
-        this.dialog.getContentPane()
       );
     this.layout.putConstraint(
         SpringLayout.NORTH,
@@ -341,9 +321,7 @@ class NewDialog implements ActionListener {
   }
 
   private void initializeButtons() {
-    this.buttons.forEach(b -> {
-        this.dialog.getContentPane().add(b);
-      });
+    this.buttons.forEach(button -> this.dialog.getContentPane().add(button));
     this.layout.putConstraint(
         SpringLayout.NORTH,
         this.buttons.get(0),
@@ -361,7 +339,7 @@ class NewDialog implements ActionListener {
     this.layout.putConstraint(
         SpringLayout.WEST,
         this.buttons.get(0),
-        -24,
+        -BUTTON_WIDTH * 2,
         SpringLayout.EAST,
         this.buttons.get(0)
       );
@@ -432,37 +410,35 @@ class NewDialog implements ActionListener {
 
   List<JLabel> makeLabels() {
     List<JLabel> out = new ArrayList<>(7);
-    out.add(new JLabel("NAME"));
-    out.add(new JLabel("START"));
-    out.add(new JLabel("END"));
-    out.add(new JLabel("RATE"));
-    out.add(new JLabel("WIDTH"));
-    out.add(new JLabel("HEIGHT"));
-    out.add(new JLabel("PATH"));
-    out.forEach(l -> {
-      l.setFont(FONT_DIALOG);
-    });
+    out.add(new JLabel("Name:"));
+    out.add(new JLabel("Start:"));
+    out.add(new JLabel("End:"));
+    out.add(new JLabel("Rate:"));
+    out.add(new JLabel("Width:"));
+    out.add(new JLabel("Height:"));
+    out.add(new JLabel("Path:"));
+    out.forEach(label -> label.setFont(FONT_DIALOG));
     return Collections.unmodifiableList(out);
   }
 
   private List<JTextField> makeTextFields() {
     List<JTextField> out = new ArrayList<>(7);
     out.add(new JTextField(20));
-    out.add(new JTextField(8));
-    out.add(new JTextField(8));
+    out.add(new JTextField(7));
+    out.add(new JTextField(7));
     out.add(new JTextField(4));
-    out.add(new JTextField(8));
-    out.add(new JTextField(8));
+    out.add(new JTextField(7));
+    out.add(new JTextField(7));
     out.add(new JTextField(20));
-    out.stream().forEach(f -> f.setFont(FONT_TEXT_FIELD));
+    out.stream().forEach(field -> field.setFont(FONT_TEXT_FIELD));
     return Collections.unmodifiableList(out);
   }
 
   private List<JButton> makeButtons() {
     List<JButton> out = new ArrayList<>(3);
-    out.add(new InterfaceButton("^", "browse", this, "Browse..."));
-    out.add(new InterfaceButton("CANCEL", "cancel", this));
-    out.add(new InterfaceButton("MAKE", "make", this));
+    out.add(new InterfaceButton("Browse…", "browse", this));
+    out.add(new InterfaceButton("Cancel", "cancel", this));
+    out.add(new InterfaceButton("Make", "make", this));
     return Collections.unmodifiableList(out);
   }
 }

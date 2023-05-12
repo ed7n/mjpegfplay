@@ -52,7 +52,7 @@ public class ConfigFileReader
       seekToKey(reader, row, key);
       foundKey = true;
       return getValue(reader, row, key);
-    } catch (NullPointerException e) {
+    } catch (NullPointerException exception) {
       if (foundKey) {
         throw new EOFException(this.path + ':' + row);
       } else {
@@ -82,7 +82,7 @@ public class ConfigFileReader
         out.put(currentKey, getValue(reader, row, currentKey));
       }
       return out;
-    } catch (NullPointerException e) {
+    } catch (NullPointerException exception) {
       throw new EOFException(this.path + ':' + row);
     }
   }
@@ -106,7 +106,7 @@ public class ConfigFileReader
       key = seekToIndex(reader, row, index);
       foundKey = true;
       return getValue(reader, row, key);
-    } catch (NullPointerException e) {
+    } catch (NullPointerException exception) {
       if (foundKey) {
         throw new EOFException(this.path + ':' + row);
       } else {
@@ -140,7 +140,7 @@ public class ConfigFileReader
         out.add(getValue(reader, row, currentKey));
       }
       return out;
-    } catch (NullPointerException e) {
+    } catch (NullPointerException exception) {
       throw new EOFException(path + ':' + row);
     }
   }

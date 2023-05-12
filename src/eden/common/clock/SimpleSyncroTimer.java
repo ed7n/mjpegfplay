@@ -52,7 +52,7 @@ public class SimpleSyncroTimer extends EDENTimer implements Runnable {
       this.runnable.run();
       track();
       Thread.sleep(this.delay);
-    } catch (InterruptedException e) {
+    } catch (InterruptedException exception) {
       return;
     }
   }
@@ -100,7 +100,7 @@ public class SimpleSyncroTimer extends EDENTimer implements Runnable {
     this.thread.interrupt();
     try {
       this.thread.join();
-    } catch (InterruptedException e) {}
+    } catch (InterruptedException exception) {}
   }
 
   /** Returns the {@code Runnable} of this {@code SimpleSyncroTimer} */

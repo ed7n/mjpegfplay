@@ -73,7 +73,7 @@ public class FileImageLens extends ReadAheadLens<Image> {
             synchronized (this) {
               wait();
             }
-          } catch (InterruptedException e) {
+          } catch (InterruptedException exception) {
             return;
           }
           if (this.call.get()) {
@@ -86,14 +86,14 @@ public class FileImageLens extends ReadAheadLens<Image> {
                 new File(this.path + frame + "." + this.sequence.getExtension())
               )
             );
-          } catch (IIOException e) {
+          } catch (IIOException exception) {
             add(null);
           }
           frame += skip;
         }
       }
-    } catch (IOException | NullPointerException e) {
-      die(e);
+    } catch (IOException | NullPointerException exception) {
+      die(exception);
     }
   }
 
@@ -111,7 +111,7 @@ public class FileImageLens extends ReadAheadLens<Image> {
       while (this.call.get() || this.buffer.isEmpty()) {
         wait();
       }
-    } catch (InterruptedException e) {}
+    } catch (InterruptedException exception) {}
   }
 
   /** Resets the buffering operation */

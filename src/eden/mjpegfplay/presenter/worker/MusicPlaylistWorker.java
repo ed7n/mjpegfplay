@@ -357,9 +357,9 @@ public class MusicPlaylistWorker implements SequenceWorker {
         Integer.parseInt(map.get("end")),
         Byte.parseByte(map.get("rate"))
       );
-    } catch (NumberFormatException e) {
+    } catch (NumberFormatException exception) {
       throw new BadMetadataException();
-    } catch (IllegalArgumentException e) {
+    } catch (IllegalArgumentException exception) {
       throw new BadParameterException();
     }
   }
@@ -398,7 +398,7 @@ public class MusicPlaylistWorker implements SequenceWorker {
       File file = new File(path);
       try {
         out.add(new OutputSource(file));
-      } catch (UnsupportedAudioFileException e) {
+      } catch (UnsupportedAudioFileException exception) {
         // TODO
       }
     }

@@ -70,22 +70,22 @@ class ApplicationMessenger {
     }
   }
 
-  void sayMalformedSequenceException(MalformedSequenceException e) {
+  void sayMalformedSequenceException(MalformedSequenceException exception) {
     sayError(
       "Malformed Sequence Error",
       "Subject:" +
       EOL +
-      e.getSubject() +
+      exception.getSubject() +
       EOL +
       EOL +
       "Problem:" +
       EOL +
-      e.getProblem() +
+      exception.getProblem() +
       EOL +
       EOL +
       "Remedy: " +
       EOL +
-      e.getRemedy()
+      exception.getRemedy()
     );
   }
 
@@ -96,7 +96,7 @@ class ApplicationMessenger {
         return Integer.MIN_VALUE;
       }
       return Integer.parseInt(in);
-    } catch (NumberFormatException e) {
+    } catch (NumberFormatException exception) {
       sayError("Input Error", "Invalid integer.");
     }
     return Integer.MIN_VALUE;
@@ -118,15 +118,15 @@ class ApplicationMessenger {
     return out;
   }
 
-  void sayException(Exception e) {
-    if (e == null) {
+  void sayException(Exception exception) {
+    if (exception == null) {
       return;
     }
     String title, message = null;
-    if (e instanceof NumberFormatException) {
+    if (exception instanceof NumberFormatException) {
       title = "Number Format Error";
       message = "A numerical parameter is incorrectly formatted.";
-    } else if (e instanceof IOException) {
+    } else if (exception instanceof IOException) {
       title = "I/O Error";
     } else {
       title = "Error";
@@ -135,11 +135,14 @@ class ApplicationMessenger {
       sayError(title, message);
       return;
     }
-    if (e instanceof NoSuchFileException) {
+    if (exception instanceof NoSuchFileException) {
       message =
-        "The metadata file can not be found or opened." + EOL + e.getMessage();
+        "The metadata file can not be found or opened." +
+        EOL +
+        exception.getMessage();
     } else {
-      message = "An unrecognized error was thrown:" + EOL + e.toString();
+      message =
+        "An unrecognized error was thrown:" + EOL + exception.toString();
     }
     sayError(title, message);
   }
